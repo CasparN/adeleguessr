@@ -23,11 +23,9 @@ This project requires the user to supply their own Adele music files and a corre
 
 1.  **Clone the Repository (or download the files):**
     ```bash
-    git clone <repository_url>
+    git clone git@github.com:CasparN/adeleguessr.git
     cd adele-song-guessing-game 
     ```
-    (Replace `<repository_url>` with the actual URL if you host it on GitHub/GitLab etc.)
-
 2.  **Music Directory Setup:**
     *   Create a directory named `music` in the root of the project.
     *   Inside the `music` directory, create subdirectories for each Adele album you want to include (e.g., `Adele - 19 (2008)`, `Adele - 21 (2011)`, etc.).
