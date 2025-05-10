@@ -145,6 +145,12 @@ button:disabled {
     border: 1px solid #ffeeba;
 }
 
+.feedback.ended {
+    background-color: #e2e3e5;
+    color: #383d41;
+    border: 1px solid #d6d8db;
+}
+
 .feedback.error {
     background-color: #f8d7da;
     color: #721c24;

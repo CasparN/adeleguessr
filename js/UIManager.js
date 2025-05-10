@@ -4,9 +4,9 @@ class UIManager {
         this.loadingIndicator = document.getElementById('loading-indicator');
         this.startButton = document.getElementById('start-game-btn');
         this.albumCoverElement = document.getElementById('album-cover');
-        this.audioPlayerElement = document.getElementById('audio-player'); // Though managed by AudioPlayer.js, UIManager might interact with its state via Game.js
+        this.audioPlayerElement = document.getElementById('audio-player');
 
-        this.playPauseButton = document.getElementById('play-pause-btn'); // Assuming a dedicated play/pause button
+        this.playPauseButton = document.getElementById('play-pause-btn');
         this.feedbackMessageElement = document.getElementById('feedback-message');
         this.guessInputElement = document.getElementById('guess-input');
         this.submitButtonElement = document.getElementById('submit-guess-btn');
@@ -16,17 +16,19 @@ class UIManager {
         
         this.gameOverScreenElement = document.getElementById('game-over-screen');
         this.finalScoreElement = document.getElementById('final-score');
-        this.maxRoundsPlayedElement = document.getElementById('max-rounds-played'); // For "x out of y rounds"
+        this.maxRoundsPlayedElement = document.getElementById('max-rounds-played');
         this.playAgainButtonElement = document.getElementById('play-again-btn');
 
-        this.currentSongTitleElement = document.getElementById('current-song-title'); // To display song title after guess/skip
+        this.currentSongTitleElement = document.getElementById('current-song-title');
 
-        // Initial state: hide elements that shouldn't be visible at start
+        // Initial state
         if (this.gameContainer) this.gameContainer.classList.add('hidden');
         if (this.gameOverScreenElement) this.gameOverScreenElement.classList.add('hidden');
         if (this.nextSongButtonElement) this.nextSongButtonElement.classList.add('hidden');
         if (this.loadingIndicator) this.loadingIndicator.classList.add('hidden');
         if (this.startButton) this.startButton.classList.add('hidden');
+        if (this.albumCoverElement) this.albumCoverElement.src = 'placeholder.png'; // Ensure placeholder at start
+        if (this.currentSongTitleElement) this.currentSongTitleElement.classList.add('hidden');
     }
 
     setupEventListeners(gameInstance) {
@@ -57,22 +59,29 @@ class UIManager {
         if (this.playAgainButtonElement) {
             this.playAgainButtonElement.addEventListener('click', () => {
                 this.hideGameOver();
+                // Reset UI for a new game start, Game.js->startGame will call showPlayingState
+                this.displaySongInfo(null, false); 
                 gameInstance.startGame();
             });
         }
     }
 
-    displaySongInfo(song, showTitle = false) {
-        if (this.albumCoverElement && song && song.albumCoverPath) {
-            this.albumCoverElement.src = song.albumCoverPath;
-            this.albumCoverElement.alt = song.album || 'Album Cover';
-        } else if (this.albumCoverElement) {
-            this.albumCoverElement.src = 'placeholder.jpg'; // Default placeholder
-            this.albumCoverElement.alt = 'Album Cover';
+    displaySongInfo(song, showFullDetails = false) {
+        if (this.albumCoverElement) {
+            if (showFullDetails && song && song.albumCoverPath) {
+                this.albumCoverElement.src = song.albumCoverPath;
+                this.albumCoverElement.alt = song.album || 'Album Cover';
+            } else {
+                // Reset to placeholder if not already set or if hiding details
+                if (this.albumCoverElement.src !== 'placeholder.png') {
+                    this.albumCoverElement.src = 'placeholder.png';
+                }
+                this.albumCoverElement.alt = 'Guess the Album';
+            }
         }
 
         if (this.currentSongTitleElement) {
-            if (showTitle && song && song.title) {
+            if (showFullDetails && song && song.title) {
                 this.currentSongTitleElement.textContent = `Song: ${song.title}`;
                 this.currentSongTitleElement.classList.remove('hidden');
             } else {
@@ -82,19 +91,25 @@ class UIManager {
         }
     }
 
-    showFeedback(isCorrect, correctAnswer = null, isSkip = false) {
+    showFeedback(isCorrect, correctAnswer = null, isSkip = false, pointsEarned = 0, isSongEnd = false) {
         if (!this.feedbackMessageElement) return;
-        this.feedbackMessageElement.classList.remove('correct', 'incorrect', 'skipped');
-        if (isSkip) {
-            this.feedbackMessageElement.textContent = `Skipped! The song was: ${correctAnswer}`;
+        this.feedbackMessageElement.classList.remove('correct', 'incorrect', 'skipped', 'ended', 'hidden');
+        let message = '';
+
+        if (isSongEnd) {
+            message = `Song ended! The song was: ${correctAnswer}.`;
+            this.feedbackMessageElement.classList.add('ended');
+        } else if (isSkip) {
+            message = `Skipped! The song was: ${correctAnswer}.`;
             this.feedbackMessageElement.classList.add('skipped');
         } else if (isCorrect) {
-            this.feedbackMessageElement.textContent = 'Correct!';
+            message = `Correct! +${pointsEarned} points. The song was: ${correctAnswer}.`;
             this.feedbackMessageElement.classList.add('correct');
         } else {
-            this.feedbackMessageElement.textContent = `Incorrect. The song was: ${correctAnswer}`;
+            message = `Incorrect. The song was: ${correctAnswer}.`;
             this.feedbackMessageElement.classList.add('incorrect');
         }
+        this.feedbackMessageElement.textContent = message;
         this.feedbackMessageElement.classList.remove('hidden');
     }
 
@@ -113,7 +128,7 @@ class UIManager {
 
     updatePlayButton(isPlaying) {
         if (this.playPauseButton) {
-            this.playPauseButton.textContent = isPlaying ? 'Pause Snippet' : 'Play Snippet';
+            this.playPauseButton.textContent = isPlaying ? 'Pause Song' : 'Play Song';
         }
     }
 
@@ -134,13 +149,13 @@ class UIManager {
         if (this.gameOverScreenElement) this.gameOverScreenElement.classList.add('hidden');
     }
 
-    showIdleState() { // After loading, ready to start
+    showIdleState() { 
         if (this.loadingIndicator) this.loadingIndicator.classList.add('hidden');
         if (this.startButton) this.startButton.classList.remove('hidden');
-        if (this.gameContainer) this.gameContainer.classList.add('hidden'); // Game UI still hidden
+        if (this.gameContainer) this.gameContainer.classList.add('hidden'); 
         if (this.gameOverScreenElement) this.gameOverScreenElement.classList.add('hidden');
         this.clearFeedback();
-        if(this.currentSongTitleElement) this.currentSongTitleElement.classList.add('hidden');
+        this.displaySongInfo(null, false); // Ensure album art is placeholder and title hidden
     }
     
     showPlayingState() {
@@ -148,16 +163,26 @@ class UIManager {
         if (this.startButton) this.startButton.classList.add('hidden');
         if (this.gameContainer) this.gameContainer.classList.remove('hidden');
         if (this.gameOverScreenElement) this.gameOverScreenElement.classList.add('hidden');
+        
         if (this.nextSongButtonElement) this.nextSongButtonElement.classList.add('hidden');
         this.enableGuessing();
         this.clearFeedback();
-        this.updatePlayButton(false); // Reset to "Play Snippet"
+        // Album art and title are handled by Game.js calling displaySongInfo(song, false) in nextRound
+        
+        this.updatePlayButton(true); // Song is autoplaying, so show Pause
+        if (this.playPauseButton) {
+            this.playPauseButton.disabled = false; 
+        }
     }
 
-    showRoundOverState() { // After guess/skip, before next round
+    showRoundOverState() { 
         this.disableGuessing();
         if (this.nextSongButtonElement) this.nextSongButtonElement.classList.remove('hidden');
-        if (this.playPauseButton) this.playPauseButton.disabled = true;
+        
+        this.updatePlayButton(false); // Show "Play Song"
+        if (this.playPauseButton) {
+            this.playPauseButton.disabled = true; 
+        }
     }
 
     showGameOver(finalScore, maxRounds) {
@@ -184,18 +209,16 @@ class UIManager {
     disableGuessing() {
         if (this.guessInputElement) this.guessInputElement.disabled = true;
         if (this.submitButtonElement) this.submitButtonElement.disabled = true;
-        // Keep skip active or disable? Let's disable it after a guess.
         if (this.skipButtonElement) this.skipButtonElement.disabled = true; 
     }
     
     showError(message) {
-        // Could use feedbackMessageElement or a dedicated error div
         if (this.feedbackMessageElement) {
             this.feedbackMessageElement.textContent = message;
-            this.feedbackMessageElement.className = 'feedback error'; // Add a general error class
+            this.feedbackMessageElement.className = 'feedback error'; 
             this.feedbackMessageElement.classList.remove('hidden');
         } else {
-            alert(message); // Fallback
+            alert(message); 
         }
         if (this.loadingIndicator) this.loadingIndicator.classList.add('hidden');
         if (this.startButton) this.startButton.classList.add('hidden');

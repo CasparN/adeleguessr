@@ -7,13 +7,15 @@ Adele Song Guessing Game
 Create an interactive web application where users can listen to snippets of Adele songs and guess the song title.
 
 ## 3. Core Features
-*   Play random audio snippets from Adele's songs located in the `music/` directory.
+*   Songs autoplay when a round starts.
+*   Users listen to the full song (or until they guess/skip).
 *   Allow users to type in their guess for the song title.
-*   Provide immediate feedback (correct/incorrect) to the user.
-*   Keep track of the user's score.
-*   Display the album cover (`cover.jpg`) associated with the song currently playing.
-*   Option to skip a song or get a new song.
+*   Provide immediate feedback (correct/incorrect/song ended) to the user.
+*   Keep track of the user's score, with dynamic scoring based on guess speed.
+*   Display the album cover (`cover.jpg`) and song title *after* the song is correctly guessed, skipped, or the song ends.
+*   Option to skip a song.
 *   End game screen with final score and option to play again.
+*   Play/Pause functionality for the current song.
 
 ## 4. Technology Stack
 *   **Frontend:** HTML, CSS, JavaScript (ES6+)
@@ -36,22 +38,29 @@ Create an interactive web application where users can listen to snippets of Adel
 
 ### `AudioPlayer.js`
 *   **Responsibilities:**
-    *   Controls audio playback (loading, playing snippets, pausing, stopping).
+    *   Controls audio playback (loading, playing full songs, pausing, stopping).
+    *   Tracks playback time for dynamic scoring.
+    *   Notifies when a song ends naturally.
 *   **Properties:**
     *   `audioElement`: HTML5 `<audio>` element.
     *   `currentSongPath`: Path to the current song file.
-    *   `snippetDuration`: Duration of the song snippet to play (e.g., 15-30 seconds).
+    *   `attemptStartTime`: Timestamp for when playback started for the current attempt.
+    *   `totalPausedDuration`: Accumulates time the song was paused during an attempt.
+    *   `onSongEndCallback`: Callback function for when the song finishes playing.
 *   **Methods:**
-    *   `constructor(snippetDuration = 20)`
+    *   `constructor(audioElement)`
     *   `loadSong(filePath)`: Loads a new song into the audio element.
-    *   `playSnippet()`: Plays a predefined duration of the loaded song. Might involve setting `currentTime` and using a `setTimeout` to stop.
-    *   `pause()`
-    *   `stop()`
+    *   `play()`: Plays the loaded song and records the start time.
+    *   `pause()`: Pauses the song and records paused duration.
+    *   `stop()`: Stops playback and resets timing variables.
     *   `isPlaying()`: Returns boolean.
+    *   `getElapsedAttemptTime()`: Calculates the net playback time for the current attempt, accounting for pauses.
+    *   `setOnSongEnd(callback)`: Sets a callback for when the song naturally concludes.
 
 ### `Game.js`
 *   **Responsibilities:**
-    *   Manages the overall game state, logic, and flow.
+    *   Manages the overall game state, logic, and flow, including autoplay.
+    *   Calculates dynamic scores.
     *   Interacts with `SongProvider`, `AudioPlayer`, and `UIManager`.
 *   **Properties:**
     *   `songProvider`: Instance of `SongProvider`.
@@ -59,15 +68,22 @@ Create an interactive web application where users can listen to snippets of Adel
     *   `uiManager`: Instance of `UIManager`.
     *   `currentSong`: The current song object being played/guessed.
     *   `score`: User's current score.
-    *   `lives` or `attemptsLeft`: Number of incorrect guesses allowed per song or overall.
-    *   `gameState`: (e.g., `loading`, `playing`, `guessing`, `feedback`, `gameOver`).
+    *   `roundsPlayed`: Number of rounds played.
+    *   `maxRounds`: Maximum number of rounds per game.
+    *   `playedSongIds`: Set of IDs of songs already played in the current game.
+    *   `gameState`: (e.g., `loading`, `idle`, `playing`, `roundOver`, `gameOver`).
 *   **Methods:**
-    *   `constructor()`
-    *   `startGame()`: Initializes the game, fetches the first song, updates UI.
-    *   `nextRound()`: Loads and plays a new song snippet.
-    *   `submitGuess(guess)`: Compares the user's guess with `currentSong.title`. Updates score and lives accordingly. Provides feedback via `UIManager`.
-    *   `skipSong()`: Loads a new song without penalty or with a small penalty.
-    *   `endGame()`: Displays final score and game over message.
+    *   `constructor(songProvider, audioPlayer, uiManager, maxRounds = 10)`
+    *   `async initializeGame()`: Loads songs and sets up initial UI.
+    *   `startGame()`: Resets game state and starts the first round (with autoplay).
+    *   `nextRound()`: Fetches a random song, updates UI, and autoplays the song.
+    *   `handleGuess(userGuess)`: Compares guess, calculates points dynamically, provides feedback, updates score, and reveals song info.
+    *   `skipSong()`: Skips current song, reveals info, and moves to next round or ends game.
+    *   `handleSongEnd()`: Called when song finishes naturally; reveals info, awards minimal points if not guessed, and moves to next round or ends game.
+    *   `calculatePoints(elapsedTime)`: Calculates points based on how quickly the user guessed.
+    *   `endGame()`: Displays final score.
+    *   `normalizeString(str)`: Helper to clean strings.
+    *   `togglePlayPause()`: Toggles audio playback.
 
 ### `UIManager.js`
 *   **Responsibilities:**
@@ -80,17 +96,18 @@ Create an interactive web application where users can listen to snippets of Adel
     *   `skipButtonElement`
     *   `scoreDisplayElement`
     *   `feedbackMessageElement`
-    *   `playPauseButtonElement` (if manual snippet control is desired)
+    *   `playPauseButtonElement`
+    *   `nextSongButtonElement`
     *   `gameContainerElement`
     *   `gameOverScreenElement`
 *   **Methods:**
     *   `constructor()`: Gets references to DOM elements.
     *   `setupEventListeners(gameInstance)`: Binds event listeners (e.g., guess submission, skip).
-    *   `displaySongInfo(song)`: Updates album art.
-    *   `showFeedback(isCorrect, correctAnswer = null)`: Displays "Correct!" or "Incorrect. The answer was: [Song Title]".
+    *   `displaySongInfo(song, showFullDetails)`: Updates album art and song title. `showFullDetails` controls whether to show actual info or placeholder.
+    *   `showFeedback(type, message, points = null)`: Displays feedback (e.g., correct, incorrect, skipped, ended).
     *   `updateScore(newScore)`
     *   `updateLives(remainingLives)`
-    *   `togglePlayButton(isPlaying)`
+    *   `togglePlayPauseButton(isPlaying)`
     *   `resetGuessInput()`
     *   `showLoadingState()`
     *   `showPlayingState()`
@@ -103,7 +120,7 @@ Create an interactive web application where users can listen to snippets of Adel
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" width="device-width, initial-scale=1.0">
     <title>Adele Song Guessing Game</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -114,13 +131,12 @@ Create an interactive web application where users can listen to snippets of Adel
 
     <main id="game-container">
         <section id="album-art-section">
-            <img id="album-cover" src="placeholder.jpg" alt="Album Cover">
+            <img id="album-cover" src="placeholder.png" alt="Album Cover">
         </section>
 
         <section id="player-controls">
-            <!-- Audio element will be controlled by JS, might not be visible -->
             <audio id="audio-player"></audio>
-            <!-- Optional: <button id="play-pause-btn">Play Snippet</button> -->
+            <button id="play-pause-btn">Play/Pause</button>
         </section>
 
         <section id="guessing-area">
@@ -132,7 +148,6 @@ Create an interactive web application where users can listen to snippets of Adel
 
         <section id="score-area">
             <p>Score: <span id="score-display">0</span></p>
-            <!-- Optional: <p>Lives: <span id="lives-display">3</span></p> -->
         </section>
     </main>
 
@@ -197,20 +212,20 @@ Adele/
     *   Load and parse `songs.json`.
     *   Implement `getRandomSong()`.
 4.  **Implement `AudioPlayer.js`:**
-    *   Basic audio loading and `playSnippet()` functionality.
+    *   Basic audio loading and `play()` functionality.
     *   Handle potential issues with FLAC playback in browsers (consider if conversion to MP3/OGG is needed for wider compatibility or if modern browsers handle FLAC sufficiently via `<audio>`). For now, assume FLAC works.
 5.  **Implement `UIManager.js` (Initial):**
     *   Get element references.
     *   Basic methods to update score and display album art.
 6.  **Implement `Game.js` (Core Logic):**
     *   Integrate `SongProvider` and `AudioPlayer`.
-    *   Implement `startGame()`, `nextRound()`, and `submitGuess()` (basic version).
+    *   Implement `startGame()`, `nextRound()`, and `handleGuess()` (basic version).
 7.  **Connect UI Events in `UIManager.js`:**
     *   Handle guess submission and skip song button clicks.
 8.  **Refine `UIManager.js`:**
     *   Implement feedback messages, game over screen.
 9.  **Refine `AudioPlayer.js`:**
-    *   Ensure robust snippet playing (e.g., random start point within the song, or fixed preview duration).
+    *   Ensure robust playback (e.g., full song playback, dynamic scoring).
 10. **Styling and UX:** Improve CSS, add transitions, ensure responsiveness.
 11. **Testing:** Thoroughly test across different scenarios.
 12. **(Optional) Advanced Features:**
@@ -220,11 +235,8 @@ Adele/
 
 ## 11. Considerations & Challenges
 *   **FLAC Support & File Size:** FLAC files are lossless but can be large. This might lead to longer loading times for song snippets. Test browser compatibility for FLAC. If issues arise, batch conversion to a more web-friendly format like MP3 or OGG might be necessary.
-*   **Song Snippet Generation:** Decide on a strategy for snippets:
-    *   Play the first X seconds.
-    *   Play X seconds from a random point in the song.
-    *   Manually define start/end times for snippets in `songs.json` (most control, but most effort).
-*   **User Experience:** The game should be intuitive and fun. Clear feedback and smooth transitions are key.
+*   **Song Playback:** Full song playback replaces snippets. Dynamic scoring incentivizes quick guesses.
+*   **User Experience:** The game should be intuitive and fun. Clear feedback, smooth transitions, and autoplay are key.
 *   **Scalability:** If the music library grows significantly, `songs.json` generation should be automated.
 *   **Security (Client-Side):** All game logic and song information (including answers) will be client-side, making it possible for users to find answers by inspecting code. This is generally acceptable for a fun, casual game.
 

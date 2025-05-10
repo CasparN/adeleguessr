@@ -50,3 +50,38 @@
     - Added distinct feedback styles for `.correct`, `.incorrect`, `.skipped`, and a general `.error` class.
     - Improved general layout, button styling, and added a `max-width` to the `main#game-container` for better appearance on wider screens.
     - Ensured the `.hidden` class uses `display: none !important;` for reliable hiding of elements.
+
+## May 11, 2025
+
+### Feature Enhancements: Autoplay, Dynamic Scoring, Full Song Playback
+
+-   **Modified `AudioPlayer.js`**:
+    -   Removed fixed snippet duration logic.
+    -   Implemented full song playback.
+    -   Added timing mechanisms (`attemptStartTime`, `totalPausedDuration`, `getElapsedAttemptTime()`) to track net playback time for dynamic scoring.
+    -   Added `setOnSongEnd(callback)` to allow `Game.js` to react when a song finishes playing naturally.
+    -   Constructor now only takes the audio HTML element.
+-   **Modified `Game.js`**:
+    -   Implemented autoplay of songs when a new round starts in `nextRound()`.
+    -   Added `calculatePoints(elapsedTime)` method for dynamic scoring: full points for a quick guess (e.g., within 5 seconds), with points halving for subsequent 5-second intervals.
+    -   Added `handleSongEnd()` to manage scenarios where the song finishes before the user guesses or skips. This typically awards 0 or minimal points and reveals the song information.
+    -   Updated `handleGuess()` and `skipSong()` to use the new dynamic scoring logic and to correctly transition UI states (e.g., revealing song info only after the round is over).
+    -   Album art and song title are now revealed by `UIManager.displaySongInfo(..., true)` only after a guess, skip, or song end.
+-   **Modified `UIManager.js`**:
+    -   `displaySongInfo(song, showFullDetails)` method updated. `showFullDetails` (boolean) now controls whether to display the actual album art and title or a placeholder (e.g., hidden album art before a guess).
+    -   `showFeedback(type, message, points = null)` updated to accommodate different feedback scenarios, including points awarded and messages for when a song ends.
+    -   Play/pause button (`#play-pause-btn`) text and state management updated to reflect autoplay (e.g., initially shows "Pause").
+    -   UI state methods (`showIdleState`, `showPlayingState`, `showRoundOverState`, `showGameOverState`) refined to support the new game flow and information display rules.
+-   **Updated `index.html`**:
+    -   Adjustments made to support the refined UI states and elements managed by `UIManager.js` for autoplay and dynamic scoring feedback. (Covered by previous `index.html` updates for new buttons and display areas).
+-   **Updated `css/style.css`**:
+    -   Added styling for `.feedback.ended` to provide distinct visual feedback when a song ends before a guess.
+-   **Updated `js/main.js`**:
+    -   `AudioPlayer` instantiation updated to reflect its new constructor (no snippet duration).
+-   **Project Plan Update**: `project_plan.md` updated to reflect these changes in core features and JS module descriptions.
+-   **Notes Update**: This `notes.md` file updated.
+
+Next Steps:
+-   Thoroughly test the application for game flow, scoring accuracy, UI responsiveness, and error handling.
+-   Verify the `placeholder.png` image path and consider a more robust fallback for `albumCoverPath` in `UIManager.js` if a song's specific cover path is invalid.
+-   Consider improving error handling in the `AudioPlayer.js` constructor if the audio HTML element isn't found.
