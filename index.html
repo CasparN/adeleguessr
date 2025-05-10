@@ -35,12 +35,19 @@
 
         <section id="score-area">
             <p>Score: <span id="score-display">0</span></p>
+            <p id="round-counter">Round: <span id="current-round-display">0</span>/<span id="total-rounds-display">0</span></p>
         </section>
     </main>
 
     <section id="game-over-screen" class="hidden">
         <h2>Game Over!</h2>
         <p>Your final score: <span id="final-score">0</span> (out of <span id="max-rounds-played">0</span> rounds)</p>
+        <div id="played-songs-container">
+            <h3>Round Summary:</h3>
+            <ul id="played-songs-list">
+                <!-- Song results will be populated here by JavaScript -->
+            </ul>
+        </div>
         <button id="play-again-btn">Play Again</button>
     </section>
 

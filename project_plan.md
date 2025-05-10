@@ -14,7 +14,8 @@ Create an interactive web application where users can listen to snippets of Adel
 *   Keep track of the user's score, with dynamic scoring based on guess speed.
 *   Display the album cover (`cover.jpg`) and song title *after* the song is correctly guessed, skipped, or the song ends.
 *   Option to skip a song.
-*   End game screen with final score and option to play again.
+*   Display a round counter during gameplay (e.g., "Round 1/10").
+*   End game screen with final score, option to play again, and a summary of all songs played (title, guessed correctly/incorrectly, time taken for correct guesses).
 *   Play/Pause functionality for the current song.
 
 ## 4. Technology Stack
@@ -61,6 +62,7 @@ Create an interactive web application where users can listen to snippets of Adel
 *   **Responsibilities:**
     *   Manages the overall game state, logic, and flow, including autoplay.
     *   Calculates dynamic scores.
+    *   Tracks played songs for the end-game summary.
     *   Interacts with `SongProvider`, `AudioPlayer`, and `UIManager`.
 *   **Properties:**
     *   `songProvider`: Instance of `SongProvider`.
@@ -71,23 +73,25 @@ Create an interactive web application where users can listen to snippets of Adel
     *   `roundsPlayed`: Number of rounds played.
     *   `maxRounds`: Maximum number of rounds per game.
     *   `playedSongIds`: Set of IDs of songs already played in the current game.
+    *   `playedSongsHistory`: Array of objects detailing each song played in the current game (title, album art path, guessed status, time to guess, outcome).
     *   `gameState`: (e.g., `loading`, `idle`, `playing`, `roundOver`, `gameOver`).
 *   **Methods:**
     *   `constructor(songProvider, audioPlayer, uiManager, maxRounds = 10)`
-    *   `async initializeGame()`: Loads songs and sets up initial UI.
-    *   `startGame()`: Resets game state and starts the first round (with autoplay).
-    *   `nextRound()`: Fetches a random song, updates UI, and autoplays the song.
-    *   `handleGuess(userGuess)`: Compares guess, calculates points dynamically, provides feedback, updates score, and reveals song info.
-    *   `skipSong()`: Skips current song, reveals info, and moves to next round or ends game.
-    *   `handleSongEnd()`: Called when song finishes naturally; reveals info, awards minimal points if not guessed, and moves to next round or ends game.
+    *   `async initializeGame()`: Loads songs, sets up initial UI, and initializes round counter.
+    *   `startGame()`: Resets game state, clears history, and starts the first round (with autoplay).
+    *   `nextRound()`: Fetches a random song, updates UI (including round counter), and autoplays the song.
+    *   `handleGuess(userGuess)`: Compares guess, calculates points dynamically, provides feedback, updates score, reveals song info, and records song outcome in history.
+    *   `skipSong()`: Skips current song, reveals info, records outcome in history, and moves to next round or ends game.
+    *   `handleSongEnd()`: Called when song finishes naturally; reveals info, records outcome in history, and moves to next round or ends game.
     *   `calculatePoints(elapsedTime)`: Calculates points based on how quickly the user guessed.
-    *   `endGame()`: Displays final score.
+    *   `endGame()`: Displays final score and the detailed played songs summary.
     *   `normalizeString(str)`: Helper to clean strings.
     *   `togglePlayPause()`: Toggles audio playback.
 
 ### `UIManager.js`
 *   **Responsibilities:**
     *   Handles all DOM manipulations and user interface updates.
+    *   Displays round counter and game over summary.
     *   Responds to events from user interactions (e.g., button clicks, input submissions).
 *   **Properties:** (DOM Element References)
     *   `albumCoverElement`
@@ -99,20 +103,39 @@ Create an interactive web application where users can listen to snippets of Adel
     *   `playPauseButtonElement`
     *   `nextSongButtonElement`
     *   `gameContainerElement`
+    *   `loadingIndicatorElement`
+    *   `startButtonElement`
     *   `gameOverScreenElement`
+    *   `finalScoreElement`
+    *   `maxRoundsPlayedElement`
+    *   `playAgainButtonElement`
+    *   `currentSongTitleElement`
+    *   `roundCounterElement`
+    *   `currentRoundDisplayElement`
+    *   `totalRoundsDisplayElement`
+    *   `playedSongsContainerElement`
+    *   `playedSongsListElement`
 *   **Methods:**
-    *   `constructor()`: Gets references to DOM elements.
-    *   `setupEventListeners(gameInstance)`: Binds event listeners (e.g., guess submission, skip).
-    *   `displaySongInfo(song, showFullDetails)`: Updates album art and song title. `showFullDetails` controls whether to show actual info or placeholder.
-    *   `showFeedback(type, message, points = null)`: Displays feedback (e.g., correct, incorrect, skipped, ended).
+    *   `constructor()`
+    *   `setupEventListeners(gameInstance)`
+    *   `displaySongInfo(song, showFullDetails)`
+    *   `showFeedback(isCorrect, correctAnswer, isSkip, pointsEarned, isSongEnd)`
+    *   `clearFeedback()`
     *   `updateScore(newScore)`
-    *   `updateLives(remainingLives)`
-    *   `togglePlayPauseButton(isPlaying)`
+    *   `updateRoundCounter(currentRound, totalRounds)`
+    *   `updatePlayButton(isPlaying)`
     *   `resetGuessInput()`
+    *   `getGuess()`
     *   `showLoadingState()`
+    *   `showIdleState()`
     *   `showPlayingState()`
-    *   `showGameOver(finalScore)`
+    *   `showRoundOverState()`
+    *   `showGameOver(finalScore, maxRounds, playedSongsHistory)`
     *   `hideGameOver()`
+    *   `displayPlayedSongsSummary(playedSongsHistory)`
+    *   `enableGuessing()`
+    *   `disableGuessing()`
+    *   `showError(message)`
 
 ## 6. HTML Structure (Conceptual - `index.html`)
 ```html

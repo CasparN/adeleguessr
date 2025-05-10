@@ -14,10 +14,19 @@ class UIManager {
         this.nextSongButtonElement = document.getElementById('next-song-btn');
         this.scoreDisplayElement = document.getElementById('score-display');
         
+        // Round Counter Elements
+        this.roundCounterElement = document.getElementById('round-counter');
+        this.currentRoundDisplayElement = document.getElementById('current-round-display');
+        this.totalRoundsDisplayElement = document.getElementById('total-rounds-display');
+
         this.gameOverScreenElement = document.getElementById('game-over-screen');
         this.finalScoreElement = document.getElementById('final-score');
         this.maxRoundsPlayedElement = document.getElementById('max-rounds-played');
         this.playAgainButtonElement = document.getElementById('play-again-btn');
+
+        // Game Over Summary Elements
+        this.playedSongsContainerElement = document.getElementById('played-songs-container');
+        this.playedSongsListElement = document.getElementById('played-songs-list');
 
         this.currentSongTitleElement = document.getElementById('current-song-title');
 
@@ -29,6 +38,8 @@ class UIManager {
         if (this.startButton) this.startButton.classList.add('hidden');
         if (this.albumCoverElement) this.albumCoverElement.src = 'placeholder.png'; // Ensure placeholder at start
         if (this.currentSongTitleElement) this.currentSongTitleElement.classList.add('hidden');
+        if (this.roundCounterElement) this.roundCounterElement.classList.add('hidden');
+        if (this.playedSongsContainerElement) this.playedSongsContainerElement.classList.add('hidden');
     }
 
     setupEventListeners(gameInstance) {
@@ -131,6 +142,22 @@ class UIManager {
         }
     }
 
+    updateRoundCounter(currentRound, totalRounds) {
+        if (this.currentRoundDisplayElement) {
+            this.currentRoundDisplayElement.textContent = currentRound;
+        }
+        if (this.totalRoundsDisplayElement) {
+            this.totalRoundsDisplayElement.textContent = totalRounds;
+        }
+        if (this.roundCounterElement) {
+            if (currentRound > 0 && totalRounds > 0) {
+                this.roundCounterElement.classList.remove('hidden');
+            } else {
+                this.roundCounterElement.classList.add('hidden');
+            }
+        }
+    }
+
     updatePlayButton(isPlaying) {
         if (this.playPauseButton) {
             this.playPauseButton.textContent = isPlaying ? 'Pause Song' : 'Play Song';
@@ -159,6 +186,7 @@ class UIManager {
         if (this.startButton) this.startButton.classList.remove('hidden');
         if (this.gameContainer) this.gameContainer.classList.add('hidden'); 
         if (this.gameOverScreenElement) this.gameOverScreenElement.classList.add('hidden');
+        if (this.roundCounterElement) this.roundCounterElement.classList.add('hidden'); // Hide round counter
         this.clearFeedback();
         this.displaySongInfo(null, false); // Ensure album art is placeholder and title hidden
     }
@@ -168,6 +196,7 @@ class UIManager {
         if (this.startButton) this.startButton.classList.add('hidden');
         if (this.gameContainer) this.gameContainer.classList.remove('hidden');
         if (this.gameOverScreenElement) this.gameOverScreenElement.classList.add('hidden');
+        if (this.roundCounterElement) this.roundCounterElement.classList.remove('hidden'); // Show round counter
         
         if (this.submitButtonElement) this.submitButtonElement.classList.remove('hidden');
         if (this.skipButtonElement) this.skipButtonElement.classList.remove('hidden');
@@ -189,6 +218,7 @@ class UIManager {
         // Explicitly hide submit and skip buttons
         if (this.submitButtonElement) this.submitButtonElement.classList.add('hidden');
         if (this.skipButtonElement) this.skipButtonElement.classList.add('hidden');
+        // Round counter remains visible
         
         if (this.nextSongButtonElement) {
             this.nextSongButtonElement.classList.remove('hidden');
@@ -201,17 +231,21 @@ class UIManager {
         }
     }
 
-    showGameOver(finalScore, maxRounds) {
+    showGameOver(finalScore, maxRounds, playedSongsHistory) {
         if (this.finalScoreElement) this.finalScoreElement.textContent = finalScore;
         if (this.maxRoundsPlayedElement) this.maxRoundsPlayedElement.textContent = maxRounds;
         if (this.gameOverScreenElement) this.gameOverScreenElement.classList.remove('hidden');
         if (this.gameContainer) this.gameContainer.classList.add('hidden');
         if (this.loadingIndicator) this.loadingIndicator.classList.add('hidden');
         if (this.startButton) this.startButton.classList.add('hidden');
+        if (this.roundCounterElement) this.roundCounterElement.classList.add('hidden'); // Hide round counter
+        this.displayPlayedSongsSummary(playedSongsHistory);
     }
 
     hideGameOver() {
         if (this.gameOverScreenElement) this.gameOverScreenElement.classList.add('hidden');
+        if (this.playedSongsListElement) this.playedSongsListElement.innerHTML = ''; // Clear summary
+        if (this.playedSongsContainerElement) this.playedSongsContainerElement.classList.add('hidden');
     }
 
     enableGuessing() {
@@ -226,6 +260,46 @@ class UIManager {
         if (this.guessInputElement) this.guessInputElement.disabled = true;
         if (this.submitButtonElement) this.submitButtonElement.disabled = true;
         if (this.skipButtonElement) this.skipButtonElement.disabled = true; 
+    }
+    
+    displayPlayedSongsSummary(playedSongsHistory) {
+        if (!this.playedSongsListElement || !this.playedSongsContainerElement) return;
+
+        this.playedSongsListElement.innerHTML = ''; // Clear previous summary
+
+        if (!playedSongsHistory || playedSongsHistory.length === 0) {
+            this.playedSongsContainerElement.classList.add('hidden');
+            return;
+        }
+
+        playedSongsHistory.forEach(songRecord => {
+            const listItem = document.createElement('li');
+            listItem.classList.add('played-song-item');
+
+            const coverImage = document.createElement('img');
+            coverImage.src = songRecord.albumCoverPath || 'placeholder.png';
+            coverImage.alt = 'Album Art';
+            coverImage.classList.add('summary-album-cover');
+            listItem.appendChild(coverImage);
+
+            const songInfoSpan = document.createElement('span');
+            songInfoSpan.textContent = songRecord.songTitle;
+            listItem.appendChild(songInfoSpan);
+
+            const resultSpan = document.createElement('span');
+            resultSpan.classList.add('song-result-status');
+
+            if (songRecord.guessedCorrectly) {
+                resultSpan.textContent = ` (Correctly guessed in ${songRecord.timeToGuess / 1000}s)`;
+                resultSpan.classList.add('guessed-correctly');
+            } else {
+                resultSpan.textContent = ` (Missed - ${songRecord.status || 'Not guessed'})`;
+                resultSpan.classList.add('guessed-incorrectly');
+            }
+            listItem.appendChild(resultSpan);
+            this.playedSongsListElement.appendChild(listItem);
+        });
+        this.playedSongsContainerElement.classList.remove('hidden');
     }
     
     showError(message) {

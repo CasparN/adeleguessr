@@ -81,6 +81,37 @@
 -   **Project Plan Update**: `project_plan.md` updated to reflect these changes in core features and JS module descriptions.
 -   **Notes Update**: This `notes.md` file updated.
 
+## 2023-10-28: Round Counter and Enhanced Game Over Screen
+
+**Implemented:**
+*   **Round Counter:**
+    *   Added HTML elements (`round-counter`, `current-round-display`, `total-rounds-display`) to `index.html`.
+    *   Added CSS for `#round-counter` in `style.css`.
+    *   In `UIManager.js`:
+        *   Added DOM references for new elements.
+        *   Created `updateRoundCounter(currentRound, totalRounds)` method.
+        *   Updated `showIdleState`, `showPlayingState`, `showGameOver` to manage visibility.
+    *   In `Game.js`:
+        *   Called `uiManager.updateRoundCounter` in `initializeGame`, `nextRound`.
+*   **Enhanced Game Over Screen:**
+    *   Added HTML elements (`played-songs-container`, `played-songs-list`) to `index.html`.
+    *   Added CSS for the summary list, items, album covers, and result status (correct/incorrect) in `style.css`.
+    *   In `UIManager.js`:
+        *   Added DOM references for new elements.
+        *   Created `displayPlayedSongsSummary(playedSongsHistory)` to build the list.
+        *   Updated `showGameOver` to call `displayPlayedSongsSummary`.
+        *   Updated `hideGameOver` to clear the list.
+    *   In `Game.js`:
+        *   Added `playedSongsHistory` array.
+        *   Populated `playedSongsHistory` in `handleGuess`, `handleSongEnd`, and `skipSong` with song title, album cover path, guessed status, time to guess (if applicable), and outcome status.
+        *   Passed `playedSongsHistory` to `uiManager.showGameOver` in `endGame`.
+
+**Files Modified:**
+*   `index.html`
+*   `css/style.css`
+*   `js/UIManager.js`
+*   `js/Game.js`
+
 Next Steps:
 -   Thoroughly test the application for game flow, scoring accuracy, UI responsiveness, and error handling.
 -   Verify the `placeholder.png` image path and consider a more robust fallback for `albumCoverPath` in `UIManager.js` if a song's specific cover path is invalid.

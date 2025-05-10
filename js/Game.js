@@ -9,6 +9,7 @@ class Game {
         this.roundsPlayed = 0;
         this.maxRounds = 10; 
         this.gameActive = false;
+        this.playedSongsHistory = []; // To store details of each round
 
         this.basePointsPerSong = 100;
 
@@ -24,6 +25,7 @@ class Game {
             return;
         }
         this.maxRounds = Math.min(this.maxRounds, this.songProvider.getSongCount());
+        this.uiManager.updateRoundCounter(0, this.maxRounds); // Initialize with 0 rounds played
         this.uiManager.showIdleState();
     }
 
@@ -35,6 +37,7 @@ class Game {
         }
         this.score = 0;
         this.roundsPlayed = 0;
+        this.playedSongsHistory = []; // Reset history for a new game
         this.gameActive = true;
         this.songProvider.playedSongs.clear(); 
         this.uiManager.updateScore(this.score);
@@ -44,7 +47,7 @@ class Game {
     }
 
     nextRound() {
-        if (!this.gameActive) return; // Ensure game is active before proceeding
+        if (!this.gameActive) return; 
         if (this.roundsPlayed >= this.maxRounds) {
             this.endGame();
             return;
@@ -60,10 +63,11 @@ class Game {
         }
 
         this.roundsPlayed++;
-        this.uiManager.displaySongInfo(this.currentSong, false); // false = don't show title/art yet
+        this.uiManager.updateRoundCounter(this.roundsPlayed, this.maxRounds);
+        this.uiManager.displaySongInfo(this.currentSong, false); 
         this.audioPlayer.loadSong(this.currentSong.filePath);
         this.audioPlayer.play();
-        this.uiManager.updatePlayButton(true); // Show pause icon
+        this.uiManager.updatePlayButton(true); 
         this.uiManager.resetGuessInput();
         this.uiManager.enableGuessing();
         this.uiManager.clearFeedback();
@@ -80,31 +84,42 @@ class Game {
         const normalizedUserGuess = this.normalizeString(userGuess);
         let isCorrect = normalizedUserGuess === this.normalizeString(correctAnswer);
 
-        // Check alternative titles if the main title didn't match
         if (!isCorrect && this.currentSong.alternativeTitles && Array.isArray(this.currentSong.alternativeTitles)) {
             for (const altTitle of this.currentSong.alternativeTitles) {
                 if (normalizedUserGuess === this.normalizeString(altTitle)) {
                     isCorrect = true;
-                    break; // Found a match in alternatives
+                    break; 
                 }
             }
         }
 
         const elapsedTimeMs = this.audioPlayer.getElapsedAttemptTime();
-
         this.audioPlayer.stop();
-        this.uiManager.updatePlayButton(false); // Show play icon, though it will be disabled
+        this.uiManager.updatePlayButton(false); 
 
         let pointsEarned = 0;
+        const songRecord = {
+            songTitle: this.currentSong.title,
+            albumCoverPath: this.currentSong.albumCoverPath,
+            guessedCorrectly: false,
+            timeToGuess: null,
+            status: ''
+        };
+
         if (isCorrect) {
             pointsEarned = this.calculatePoints(elapsedTimeMs);
             this.score += pointsEarned;
             this.uiManager.showFeedback(true, correctAnswer, false, pointsEarned);
+            songRecord.guessedCorrectly = true;
+            songRecord.timeToGuess = elapsedTimeMs;
+            songRecord.status = 'Correct';
         } else {
             this.uiManager.showFeedback(false, correctAnswer);
+            songRecord.status = 'Incorrect';
         }
+        this.playedSongsHistory.push(songRecord);
         this.uiManager.updateScore(this.score);
-        this.uiManager.displaySongInfo(this.currentSong, true); // true = show title and art
+        this.uiManager.displaySongInfo(this.currentSong, true); 
         this.uiManager.showRoundOverState(); 
     }
 
@@ -115,36 +130,37 @@ class Game {
 
         if (elapsedTimeMs <= timeThreshold) return points;
 
-        // Halve points for each 5-second interval exceeded
-        // elapsedTimeMs: 0-5000 -> 100pts
-        // elapsedTimeMs: 5001-10000 -> 50pts
-        // elapsedTimeMs: 10001-15000 -> 25pts
-        // elapsedTimeMs: 15001-20000 -> 12.5 -> 12 or 13 pts
-        // ... up to a minimum
-        let intervals = Math.floor((elapsedTimeMs - 1) / fiveSeconds); // Number of 5s intervals *after the first one*
+        let intervals = Math.floor((elapsedTimeMs - 1) / fiveSeconds); 
         
         for (let i = 0; i < intervals; i++) {
             points /= 2;
         }
         
-        return Math.max(10, Math.floor(points)); // Minimum 10 points if correct
+        return Math.max(10, Math.floor(points)); 
     }
 
     handleSongEnd() {
         if (!this.gameActive || !this.currentSong) {
             return;
         }
-        // Treat as an incorrect guess if the song ends before user action
-        this.uiManager.showFeedback(false, this.currentSong.title, false, 0, true); // isSongEnd = true
-        this.uiManager.displaySongInfo(this.currentSong, true); // Show title and art
-        this.uiManager.updateScore(this.score); // Score doesn't change
+        this.uiManager.showFeedback(false, this.currentSong.title, false, 0, true); 
+        this.uiManager.displaySongInfo(this.currentSong, true); 
+        this.uiManager.updateScore(this.score); 
         this.uiManager.showRoundOverState();
+
+        this.playedSongsHistory.push({
+            songTitle: this.currentSong.title,
+            albumCoverPath: this.currentSong.albumCoverPath,
+            guessedCorrectly: false,
+            timeToGuess: null,
+            status: 'Ended'
+        });
     }
 
     endGame() {
         this.gameActive = false;
         this.audioPlayer.stop();
-        this.uiManager.showGameOver(this.score, this.maxRounds);
+        this.uiManager.showGameOver(this.score, this.maxRounds, this.playedSongsHistory);
     }
 
     normalizeString(str) {
@@ -154,13 +170,12 @@ class Game {
 
     togglePlayPause() {
         if (!this.currentSong || !this.gameActive) return;
-        // Check using the new isPlaying() which reflects the actual audio element state
         if (this.audioPlayer.isPlaying()) {
             this.audioPlayer.pause();
-            this.uiManager.updatePlayButton(false); // Show play icon
+            this.uiManager.updatePlayButton(false); 
         } else {
             this.audioPlayer.play();
-            this.uiManager.updatePlayButton(true); // Show pause icon
+            this.uiManager.updatePlayButton(true); 
         }
     }
 
@@ -168,9 +183,17 @@ class Game {
         if (!this.gameActive || !this.currentSong) return;
         this.audioPlayer.stop();
         this.uiManager.updatePlayButton(false);
-        this.uiManager.showFeedback(false, this.currentSong.title, true); // true indicates a skip
-        this.uiManager.displaySongInfo(this.currentSong, true); // Show title and art
+        this.uiManager.showFeedback(false, this.currentSong.title, true); 
+        this.uiManager.displaySongInfo(this.currentSong, true); 
         this.uiManager.showRoundOverState();
+
+        this.playedSongsHistory.push({
+            songTitle: this.currentSong.title,
+            albumCoverPath: this.currentSong.albumCoverPath,
+            guessedCorrectly: false,
+            timeToGuess: null,
+            status: 'Skipped'
+        });
     }
 }
 
