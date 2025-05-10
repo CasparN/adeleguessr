@@ -77,7 +77,19 @@ class Game {
         }
 
         const correctAnswer = this.currentSong.title;
-        const isCorrect = this.normalizeString(userGuess) === this.normalizeString(correctAnswer);
+        const normalizedUserGuess = this.normalizeString(userGuess);
+        let isCorrect = normalizedUserGuess === this.normalizeString(correctAnswer);
+
+        // Check alternative titles if the main title didn't match
+        if (!isCorrect && this.currentSong.alternativeTitles && Array.isArray(this.currentSong.alternativeTitles)) {
+            for (const altTitle of this.currentSong.alternativeTitles) {
+                if (normalizedUserGuess === this.normalizeString(altTitle)) {
+                    isCorrect = true;
+                    break; // Found a match in alternatives
+                }
+            }
+        }
+
         const elapsedTimeMs = this.audioPlayer.getElapsedAttemptTime();
 
         this.audioPlayer.stop();

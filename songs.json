@@ -172,7 +172,8 @@
     "title": "Send My Love (To Your New Lover)",
     "filePath": "music/Adele - 25 (2015)/02. Adele - Send My Love (To Your New Lover).flac",
     "album": "25",
-    "albumCoverPath": "music/Adele - 25 (2015)/cover.jpg"
+    "albumCoverPath": "music/Adele - 25 (2015)/cover.jpg",
+    "alternativeTitles": ["Send My Love"]
   },
   {
     "id": 26,
@@ -291,7 +292,8 @@
     "title": "All Night Parking (with Erroll Garner) Interlude",
     "filePath": "music/Adele - 30 (2021)/08. Adele - All Night Parking (with Erroll Garner) Interlude.flac",
     "album": "30",
-    "albumCoverPath": "music/Adele - 30 (2021)/cover.jpg"
+    "albumCoverPath": "music/Adele - 30 (2021)/cover.jpg",
+    "alternativeTitles": ["All Night Parking"]
   },
   {
     "id": 43,

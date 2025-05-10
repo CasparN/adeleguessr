@@ -43,7 +43,12 @@ class UIManager {
         if (this.guessInputElement) {
             this.guessInputElement.addEventListener('keypress', (event) => {
                 if (event.key === 'Enter') {
-                    gameInstance.handleGuess(this.getGuess());
+                    // If Next Song button is visible, Enter means go to next round
+                    if (this.nextSongButtonElement && !this.nextSongButtonElement.classList.contains('hidden')) {
+                        gameInstance.nextRound();
+                    } else { // Otherwise, it's a guess submission
+                        gameInstance.handleGuess(this.getGuess());
+                    }
                 }
             });
         }
@@ -103,7 +108,7 @@ class UIManager {
             message = `Skipped! The song was: ${correctAnswer}.`;
             this.feedbackMessageElement.classList.add('skipped');
         } else if (isCorrect) {
-            message = `Correct! +${pointsEarned} points. The song was: ${correctAnswer}.`;
+            message = `Correct! +${pointsEarned} points.`; // Removed correctAnswer from here
             this.feedbackMessageElement.classList.add('correct');
         } else {
             message = `Incorrect. The song was: ${correctAnswer}.`;
@@ -164,7 +169,10 @@ class UIManager {
         if (this.gameContainer) this.gameContainer.classList.remove('hidden');
         if (this.gameOverScreenElement) this.gameOverScreenElement.classList.add('hidden');
         
+        if (this.submitButtonElement) this.submitButtonElement.classList.remove('hidden');
+        if (this.skipButtonElement) this.skipButtonElement.classList.remove('hidden');
         if (this.nextSongButtonElement) this.nextSongButtonElement.classList.add('hidden');
+        
         this.enableGuessing();
         this.clearFeedback();
         // Album art and title are handled by Game.js calling displaySongInfo(song, false) in nextRound
@@ -176,8 +184,16 @@ class UIManager {
     }
 
     showRoundOverState() { 
-        this.disableGuessing();
-        if (this.nextSongButtonElement) this.nextSongButtonElement.classList.remove('hidden');
+        this.disableGuessing(); // Disables input, and will disable submit/skip via their 'disabled' property
+
+        // Explicitly hide submit and skip buttons
+        if (this.submitButtonElement) this.submitButtonElement.classList.add('hidden');
+        if (this.skipButtonElement) this.skipButtonElement.classList.add('hidden');
+        
+        if (this.nextSongButtonElement) {
+            this.nextSongButtonElement.classList.remove('hidden');
+            this.nextSongButtonElement.focus(); // Set focus to allow Enter key press
+        }
         
         this.updatePlayButton(false); // Show "Play Song"
         if (this.playPauseButton) {
