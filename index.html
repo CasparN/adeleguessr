@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adele Song Guessing Game</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <h1>Adele Song Guessing Game</h1>
+    </header>
+
+    <main id="game-container">
+        <section id="album-art-section">
+            <img id="album-cover" src="placeholder.jpg" alt="Album Cover">
+        </section>
+
+        <section id="player-controls">
+            <!-- Audio element will be controlled by JS, might not be visible -->
+            <audio id="audio-player"></audio>
+            <!-- Optional: <button id="play-pause-btn">Play Snippet</button> -->
+        </section>
+
+        <section id="guessing-area">
+            <p id="feedback-message"></p>
+            <input type="text" id="guess-input" placeholder="Enter song title">
+            <button id="submit-guess-btn">Submit Guess</button>
+            <button id="skip-song-btn">Skip Song</button>
+        </section>
+
+        <section id="score-area">
+            <p>Score: <span id="score-display">0</span></p>
+            <!-- Optional: <p>Lives: <span id="lives-display">3</span></p> -->
+        </section>
+    </main>
+
+    <section id="game-over-screen" class="hidden">
+        <h2>Game Over!</h2>
+        <p>Your final score: <span id="final-score">0</span></p>
+        <button id="play-again-btn">Play Again</button>
+    </section>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

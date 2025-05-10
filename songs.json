@@ -1,0 +1,331 @@
+[
+  {
+    "id": 1,
+    "title": "Daydreamer",
+    "filePath": "music/Adele - 19 (2008)/01. Adele - Daydreamer (Explicit).flac",
+    "album": "19",
+    "albumCoverPath": "music/Adele - 19 (2008)/cover.jpg"
+  },
+  {
+    "id": 2,
+    "title": "Best For Last",
+    "filePath": "music/Adele - 19 (2008)/02. Adele - Best For Last (Explicit).flac",
+    "album": "19",
+    "albumCoverPath": "music/Adele - 19 (2008)/cover.jpg"
+  },
+  {
+    "id": 3,
+    "title": "Chasing Pavements",
+    "filePath": "music/Adele - 19 (2008)/03. Adele - Chasing Pavements (Explicit).flac",
+    "album": "19",
+    "albumCoverPath": "music/Adele - 19 (2008)/cover.jpg"
+  },
+  {
+    "id": 4,
+    "title": "Cold Shoulder",
+    "filePath": "music/Adele - 19 (2008)/04. Adele - Cold Shoulder (Explicit).flac",
+    "album": "19",
+    "albumCoverPath": "music/Adele - 19 (2008)/cover.jpg"
+  },
+  {
+    "id": 5,
+    "title": "Crazy For You",
+    "filePath": "music/Adele - 19 (2008)/05. Adele - Crazy For You (Explicit).flac",
+    "album": "19",
+    "albumCoverPath": "music/Adele - 19 (2008)/cover.jpg"
+  },
+  {
+    "id": 6,
+    "title": "Melt My Heart To Stone",
+    "filePath": "music/Adele - 19 (2008)/06. Adele - Melt My Heart To Stone (Explicit).flac",
+    "album": "19",
+    "albumCoverPath": "music/Adele - 19 (2008)/cover.jpg"
+  },
+  {
+    "id": 7,
+    "title": "First Love",
+    "filePath": "music/Adele - 19 (2008)/07. Adele - First Love (Explicit).flac",
+    "album": "19",
+    "albumCoverPath": "music/Adele - 19 (2008)/cover.jpg"
+  },
+  {
+    "id": 8,
+    "title": "Right As Rain",
+    "filePath": "music/Adele - 19 (2008)/08. Adele - Right As Rain (Explicit).flac",
+    "album": "19",
+    "albumCoverPath": "music/Adele - 19 (2008)/cover.jpg"
+  },
+  {
+    "id": 9,
+    "title": "Make You Feel My Love",
+    "filePath": "music/Adele - 19 (2008)/09. Adele - Make You Feel My Love (Explicit).flac",
+    "album": "19",
+    "albumCoverPath": "music/Adele - 19 (2008)/cover.jpg"
+  },
+  {
+    "id": 10,
+    "title": "My Same",
+    "filePath": "music/Adele - 19 (2008)/10. Adele - My Same (Explicit).flac",
+    "album": "19",
+    "albumCoverPath": "music/Adele - 19 (2008)/cover.jpg"
+  },
+  {
+    "id": 11,
+    "title": "Tired",
+    "filePath": "music/Adele - 19 (2008)/11. Adele - Tired (Explicit).flac",
+    "album": "19",
+    "albumCoverPath": "music/Adele - 19 (2008)/cover.jpg"
+  },
+  {
+    "id": 12,
+    "title": "Hometown Glory",
+    "filePath": "music/Adele - 19 (2008)/12. Adele - Hometown Glory (Explicit).flac",
+    "album": "19",
+    "albumCoverPath": "music/Adele - 19 (2008)/cover.jpg"
+  },
+  {
+    "id": 13,
+    "title": "Rolling in the Deep",
+    "filePath": "music/Adele - 21 (2011)/01. Adele - Rolling in the Deep (Explicit).flac",
+    "album": "21",
+    "albumCoverPath": "music/Adele - 21 (2011)/cover.jpg"
+  },
+  {
+    "id": 14,
+    "title": "Rumour Has It",
+    "filePath": "music/Adele - 21 (2011)/02. Adele - Rumour Has It (Explicit).flac",
+    "album": "21",
+    "albumCoverPath": "music/Adele - 21 (2011)/cover.jpg"
+  },
+  {
+    "id": 15,
+    "title": "Turning Tables",
+    "filePath": "music/Adele - 21 (2011)/03. Adele - Turning Tables (Explicit).flac",
+    "album": "21",
+    "albumCoverPath": "music/Adele - 21 (2011)/cover.jpg"
+  },
+  {
+    "id": 16,
+    "title": "Don't You Remember",
+    "filePath": "music/Adele - 21 (2011)/04. Adele - Don't You Remember (Explicit).flac",
+    "album": "21",
+    "albumCoverPath": "music/Adele - 21 (2011)/cover.jpg"
+  },
+  {
+    "id": 17,
+    "title": "Set Fire to the Rain",
+    "filePath": "music/Adele - 21 (2011)/05. Adele - Set Fire to the Rain (Explicit).flac",
+    "album": "21",
+    "albumCoverPath": "music/Adele - 21 (2011)/cover.jpg"
+  },
+  {
+    "id": 18,
+    "title": "He Won't Go",
+    "filePath": "music/Adele - 21 (2011)/06. Adele - He Won't Go (Explicit).flac",
+    "album": "21",
+    "albumCoverPath": "music/Adele - 21 (2011)/cover.jpg"
+  },
+  {
+    "id": 19,
+    "title": "Take It All",
+    "filePath": "music/Adele - 21 (2011)/07. Adele - Take It All (Explicit).flac",
+    "album": "21",
+    "albumCoverPath": "music/Adele - 21 (2011)/cover.jpg"
+  },
+  {
+    "id": 20,
+    "title": "I'll Be Waiting",
+    "filePath": "music/Adele - 21 (2011)/08. Adele - I'll Be Waiting (Explicit).flac",
+    "album": "21",
+    "albumCoverPath": "music/Adele - 21 (2011)/cover.jpg"
+  },
+  {
+    "id": 21,
+    "title": "One And Only",
+    "filePath": "music/Adele - 21 (2011)/09. Adele - One And Only (Explicit).flac",
+    "album": "21",
+    "albumCoverPath": "music/Adele - 21 (2011)/cover.jpg"
+  },
+  {
+    "id": 22,
+    "title": "Lovesong",
+    "filePath": "music/Adele - 21 (2011)/10. Adele - Lovesong (Explicit).flac",
+    "album": "21",
+    "albumCoverPath": "music/Adele - 21 (2011)/cover.jpg"
+  },
+  {
+    "id": 23,
+    "title": "Someone Like You",
+    "filePath": "music/Adele - 21 (2011)/11. Adele - Someone Like You (Explicit).flac",
+    "album": "21",
+    "albumCoverPath": "music/Adele - 21 (2011)/cover.jpg"
+  },
+  {
+    "id": 24,
+    "title": "Hello",
+    "filePath": "music/Adele - 25 (2015)/01. Adele - Hello.flac",
+    "album": "25",
+    "albumCoverPath": "music/Adele - 25 (2015)/cover.jpg"
+  },
+  {
+    "id": 25,
+    "title": "Send My Love (To Your New Lover)",
+    "filePath": "music/Adele - 25 (2015)/02. Adele - Send My Love (To Your New Lover).flac",
+    "album": "25",
+    "albumCoverPath": "music/Adele - 25 (2015)/cover.jpg"
+  },
+  {
+    "id": 26,
+    "title": "I Miss You",
+    "filePath": "music/Adele - 25 (2015)/03. Adele - I Miss You.flac",
+    "album": "25",
+    "albumCoverPath": "music/Adele - 25 (2015)/cover.jpg"
+  },
+  {
+    "id": 27,
+    "title": "When We Were Young",
+    "filePath": "music/Adele - 25 (2015)/04. Adele - When We Were Young.flac",
+    "album": "25",
+    "albumCoverPath": "music/Adele - 25 (2015)/cover.jpg"
+  },
+  {
+    "id": 28,
+    "title": "Remedy",
+    "filePath": "music/Adele - 25 (2015)/05. Adele - Remedy.flac",
+    "album": "25",
+    "albumCoverPath": "music/Adele - 25 (2015)/cover.jpg"
+  },
+  {
+    "id": 29,
+    "title": "Water Under the Bridge",
+    "filePath": "music/Adele - 25 (2015)/06. Adele - Water Under the Bridge.flac",
+    "album": "25",
+    "albumCoverPath": "music/Adele - 25 (2015)/cover.jpg"
+  },
+  {
+    "id": 30,
+    "title": "River Lea",
+    "filePath": "music/Adele - 25 (2015)/07. Adele - River Lea.flac",
+    "album": "25",
+    "albumCoverPath": "music/Adele - 25 (2015)/cover.jpg"
+  },
+  {
+    "id": 31,
+    "title": "Love In The Dark",
+    "filePath": "music/Adele - 25 (2015)/08. Adele - Love In The Dark.flac",
+    "album": "25",
+    "albumCoverPath": "music/Adele - 25 (2015)/cover.jpg"
+  },
+  {
+    "id": 32,
+    "title": "Million Years Ago",
+    "filePath": "music/Adele - 25 (2015)/09. Adele - Million Years Ago.flac",
+    "album": "25",
+    "albumCoverPath": "music/Adele - 25 (2015)/cover.jpg"
+  },
+  {
+    "id": 33,
+    "title": "All I Ask",
+    "filePath": "music/Adele - 25 (2015)/10. Adele - All I Ask.flac",
+    "album": "25",
+    "albumCoverPath": "music/Adele - 25 (2015)/cover.jpg"
+  },
+  {
+    "id": 34,
+    "title": "Sweetest Devotion",
+    "filePath": "music/Adele - 25 (2015)/11. Adele - Sweetest Devotion.flac",
+    "album": "25",
+    "albumCoverPath": "music/Adele - 25 (2015)/cover.jpg"
+  },
+  {
+    "id": 35,
+    "title": "Strangers By Nature",
+    "filePath": "music/Adele - 30 (2021)/01. Adele - Strangers By Nature.flac",
+    "album": "30",
+    "albumCoverPath": "music/Adele - 30 (2021)/cover.jpg"
+  },
+  {
+    "id": 36,
+    "title": "Easy On Me",
+    "filePath": "music/Adele - 30 (2021)/02. Adele - Easy On Me.flac",
+    "album": "30",
+    "albumCoverPath": "music/Adele - 30 (2021)/cover.jpg"
+  },
+  {
+    "id": 37,
+    "title": "My Little Love",
+    "filePath": "music/Adele - 30 (2021)/03. Adele - My Little Love.flac",
+    "album": "30",
+    "albumCoverPath": "music/Adele - 30 (2021)/cover.jpg"
+  },
+  {
+    "id": 38,
+    "title": "Cry Your Heart Out",
+    "filePath": "music/Adele - 30 (2021)/04. Adele - Cry Your Heart Out.flac",
+    "album": "30",
+    "albumCoverPath": "music/Adele - 30 (2021)/cover.jpg"
+  },
+  {
+    "id": 39,
+    "title": "Oh My God",
+    "filePath": "music/Adele - 30 (2021)/05. Adele - Oh My God.flac",
+    "album": "30",
+    "albumCoverPath": "music/Adele - 30 (2021)/cover.jpg"
+  },
+  {
+    "id": 40,
+    "title": "Can I Get It",
+    "filePath": "music/Adele - 30 (2021)/06. Adele - Can I Get It.flac",
+    "album": "30",
+    "albumCoverPath": "music/Adele - 30 (2021)/cover.jpg"
+  },
+  {
+    "id": 41,
+    "title": "I Drink Wine",
+    "filePath": "music/Adele - 30 (2021)/07. Adele - I Drink Wine.flac",
+    "album": "30",
+    "albumCoverPath": "music/Adele - 30 (2021)/cover.jpg"
+  },
+  {
+    "id": 42,
+    "title": "All Night Parking (with Erroll Garner) Interlude",
+    "filePath": "music/Adele - 30 (2021)/08. Adele - All Night Parking (with Erroll Garner) Interlude.flac",
+    "album": "30",
+    "albumCoverPath": "music/Adele - 30 (2021)/cover.jpg"
+  },
+  {
+    "id": 43,
+    "title": "Woman Like Me",
+    "filePath": "music/Adele - 30 (2021)/09. Adele - Woman Like Me.flac",
+    "album": "30",
+    "albumCoverPath": "music/Adele - 30 (2021)/cover.jpg"
+  },
+  {
+    "id": 44,
+    "title": "Hold On",
+    "filePath": "music/Adele - 30 (2021)/10. Adele - Hold On.flac",
+    "album": "30",
+    "albumCoverPath": "music/Adele - 30 (2021)/cover.jpg"
+  },
+  {
+    "id": 45,
+    "title": "To Be Loved",
+    "filePath": "music/Adele - 30 (2021)/11. Adele - To Be Loved.flac",
+    "album": "30",
+    "albumCoverPath": "music/Adele - 30 (2021)/cover.jpg"
+  },
+  {
+    "id": 46,
+    "title": "Love Is A Game",
+    "filePath": "music/Adele - 30 (2021)/12. Adele - Love Is A Game.flac",
+    "album": "30",
+    "albumCoverPath": "music/Adele - 30 (2021)/cover.jpg"
+  },
+  {
+    "id": 47,
+    "title": "Skyfall",
+    "filePath": "music/Adele - Skyfall (Full Length)/01. Adele - Skyfall.flac",
+    "album": "Skyfall",
+    "albumCoverPath": "music/Adele - Skyfall (Full Length)/cover.jpg"
+  }
+]
