@@ -34,3 +34,19 @@
     - Instantiates these classes on `DOMContentLoaded`.
     - Calls `game.initializeGame()` to load song data and set up the initial UI state.
     - Includes basic error handling for game initialization.
+
+### Action: Updated `index.html` and `css/style.css` for refined `UIManager`
+- **`index.html`**: 
+    - Added a `div` with `id="loading-indicator"`.
+    - Added a `button` with `id="start-game-btn"`.
+    - Added `button` with `id="play-pause-btn"` within `#player-controls`.
+    - Added `p` with `id="current-song-title"` to display the song title after a guess/skip.
+    - Added `button` with `id="next-song-btn"` for proceeding to the next round.
+    - Updated the game over screen to include `<span id="max-rounds-played"></span>`.
+    - Ensured all new interactive elements are initially hidden via the `hidden` class as appropriate.
+- **`css/style.css`**:
+    - Added styles for `#loading-indicator`, `#start-game-btn`, `#play-pause-btn`, `#next-song-btn`.
+    - Added styles for `#current-song-title`.
+    - Added distinct feedback styles for `.correct`, `.incorrect`, `.skipped`, and a general `.error` class.
+    - Improved general layout, button styling, and added a `max-width` to the `main#game-container` for better appearance on wider screens.
+    - Ensured the `.hidden` class uses `display: none !important;` for reliable hiding of elements.
