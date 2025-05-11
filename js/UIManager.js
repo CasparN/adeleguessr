@@ -290,7 +290,7 @@ class UIManager {
             resultSpan.classList.add('song-result-status');
 
             if (songRecord.guessedCorrectly) {
-                resultSpan.textContent = ` (Correctly guessed in ${songRecord.timeToGuess / 1000}s)`;
+                resultSpan.textContent = ` (Correctly guessed in ${(songRecord.timeToGuess / 1000).toFixed(2)}s)`;
                 resultSpan.classList.add('guessed-correctly');
             } else {
                 resultSpan.textContent = ` (Missed - ${songRecord.status || 'Not guessed'})`;
