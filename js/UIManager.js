@@ -30,6 +30,15 @@ class UIManager {
 
         this.currentSongTitleElement = document.getElementById('current-song-title');
 
+        // Game Mode Selection Elements
+        this.modeStandardRadio = document.getElementById('mode-standard');
+        this.modeAlbumTrainRadio = document.getElementById('mode-album-train');
+        this.modeAdaptiveTrainRadio = document.getElementById('mode-adaptive-train');
+        this.albumSelectionContainer = document.getElementById('album-selection-container');
+        this.albumCheckboxesContainer = document.getElementById('album-checkboxes');
+        this.adaptiveOptionsContainer = document.getElementById('adaptive-options-container');
+        this.adaptiveTypeSelect = document.getElementById('adaptive-type-select');
+
         // Initial state
         if (this.gameContainer) this.gameContainer.classList.add('hidden');
         if (this.gameOverScreenElement) this.gameOverScreenElement.classList.add('hidden');
@@ -40,6 +49,10 @@ class UIManager {
         if (this.currentSongTitleElement) this.currentSongTitleElement.classList.add('hidden');
         if (this.roundCounterElement) this.roundCounterElement.classList.add('hidden');
         if (this.playedSongsContainerElement) this.playedSongsContainerElement.classList.add('hidden');
+
+        // Hide mode-specific containers initially
+        if (this.albumSelectionContainer) this.albumSelectionContainer.classList.add('hidden');
+        if (this.adaptiveOptionsContainer) this.adaptiveOptionsContainer.classList.add('hidden');
     }
 
     setupEventListeners(gameInstance) {
@@ -78,6 +91,26 @@ class UIManager {
                 // Reset UI for a new game start, Game.js->startGame will call showPlayingState
                 this.displaySongInfo(null, false); 
                 gameInstance.startGame();
+            });
+        }
+
+        // Game Mode Radio Button Listeners
+        if (this.modeStandardRadio) {
+            this.modeStandardRadio.addEventListener('change', () => {
+                if (this.albumSelectionContainer) this.albumSelectionContainer.classList.add('hidden');
+                if (this.adaptiveOptionsContainer) this.adaptiveOptionsContainer.classList.add('hidden');
+            });
+        }
+        if (this.modeAlbumTrainRadio) {
+            this.modeAlbumTrainRadio.addEventListener('change', () => {
+                if (this.albumSelectionContainer) this.albumSelectionContainer.classList.remove('hidden');
+                if (this.adaptiveOptionsContainer) this.adaptiveOptionsContainer.classList.add('hidden');
+            });
+        }
+        if (this.modeAdaptiveTrainRadio) {
+            this.modeAdaptiveTrainRadio.addEventListener('change', () => {
+                if (this.albumSelectionContainer) this.albumSelectionContainer.classList.add('hidden');
+                if (this.adaptiveOptionsContainer) this.adaptiveOptionsContainer.classList.remove('hidden');
             });
         }
     }
@@ -174,6 +207,56 @@ class UIManager {
         return this.guessInputElement ? this.guessInputElement.value.trim() : '';
     }
 
+    // New methods for game mode UI
+    getSelectedGameMode() {
+        if (this.modeAlbumTrainRadio && this.modeAlbumTrainRadio.checked) {
+            return 'album-train';
+        }
+        if (this.modeAdaptiveTrainRadio && this.modeAdaptiveTrainRadio.checked) {
+            return 'adaptive-train';
+        }
+        return 'standard'; // Default
+    }
+
+    populateAlbumCheckboxes(albums) {
+        if (!this.albumCheckboxesContainer) return;
+        this.albumCheckboxesContainer.innerHTML = ''; // Clear existing
+        if (!albums || albums.length === 0) {
+            this.albumCheckboxesContainer.innerHTML = '<p>No albums found to select.</p>';
+            return;
+        }
+        albums.forEach(albumName => {
+            const div = document.createElement('div');
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = `album-${albumName.replace(/\s+/g, '-').toLowerCase()}`; // e.g. album-adele-19-(2008)
+            checkbox.value = albumName;
+            checkbox.name = 'album-selection';
+
+            const label = document.createElement('label');
+            label.htmlFor = checkbox.id;
+            label.textContent = albumName;
+
+            div.appendChild(checkbox);
+            div.appendChild(label);
+            this.albumCheckboxesContainer.appendChild(div);
+        });
+    }
+
+    getSelectedAlbums() {
+        if (!this.albumCheckboxesContainer) return [];
+        const selectedAlbums = [];
+        const checkboxes = this.albumCheckboxesContainer.querySelectorAll('input[name="album-selection"]:checked');
+        checkboxes.forEach(checkbox => {
+            selectedAlbums.push(checkbox.value);
+        });
+        return selectedAlbums;
+    }
+
+    getSelectedAdaptiveType() {
+        return this.adaptiveTypeSelect ? this.adaptiveTypeSelect.value : 'weakest'; // Default
+    }
+
     showLoadingState() {
         if (this.loadingIndicator) this.loadingIndicator.classList.remove('hidden');
         if (this.startButton) this.startButton.classList.add('hidden');
@@ -187,6 +270,11 @@ class UIManager {
         if (this.gameContainer) this.gameContainer.classList.add('hidden'); 
         if (this.gameOverScreenElement) this.gameOverScreenElement.classList.add('hidden');
         if (this.roundCounterElement) this.roundCounterElement.classList.add('hidden'); // Hide round counter
+        
+        // Show game setup options
+        const gameSetupOptions = document.getElementById('game-setup-options');
+        if (gameSetupOptions) gameSetupOptions.classList.remove('hidden');
+
         this.clearFeedback();
         this.displaySongInfo(null, false); // Ensure album art is placeholder and title hidden
     }
@@ -198,6 +286,10 @@ class UIManager {
         if (this.gameOverScreenElement) this.gameOverScreenElement.classList.add('hidden');
         if (this.roundCounterElement) this.roundCounterElement.classList.remove('hidden'); // Show round counter
         
+        // Hide game setup options during play
+        const gameSetupOptions = document.getElementById('game-setup-options');
+        if (gameSetupOptions) gameSetupOptions.classList.add('hidden');
+
         if (this.submitButtonElement) this.submitButtonElement.classList.remove('hidden');
         if (this.skipButtonElement) this.skipButtonElement.classList.remove('hidden');
         if (this.nextSongButtonElement) this.nextSongButtonElement.classList.add('hidden');
@@ -239,6 +331,11 @@ class UIManager {
         if (this.loadingIndicator) this.loadingIndicator.classList.add('hidden');
         if (this.startButton) this.startButton.classList.add('hidden');
         if (this.roundCounterElement) this.roundCounterElement.classList.add('hidden'); // Hide round counter
+        
+        // Hide game setup options on game over
+        const gameSetupOptions = document.getElementById('game-setup-options');
+        if (gameSetupOptions) gameSetupOptions.classList.add('hidden');
+
         this.displayPlayedSongsSummary(playedSongsHistory);
     }
 

@@ -11,6 +11,38 @@
         <h1>Adele Song Guessing Game</h1>
     </header>
 
+    <section id="game-setup-options">
+        <h2>Game Mode</h2>
+        <div>
+            <input type="radio" id="mode-standard" name="game-mode" value="standard" checked>
+            <label for="mode-standard">Standard Game</label>
+        </div>
+        <div>
+            <input type="radio" id="mode-album-train" name="game-mode" value="album-train">
+            <label for="mode-album-train">Train by Album</label>
+        </div>
+        <div>
+            <input type="radio" id="mode-adaptive-train" name="game-mode" value="adaptive-train">
+            <label for="mode-adaptive-train">Adaptive Training</label>
+        </div>
+
+        <div id="album-selection-container" class="hidden" style="margin-top: 10px;">
+            <h3>Select Albums for Training:</h3>
+            <div id="album-checkboxes">
+                <!-- Album checkboxes will be populated here by UIManager.js -->
+            </div>
+        </div>
+
+        <div id="adaptive-options-container" class="hidden" style="margin-top: 10px;">
+            <label for="adaptive-type-select">Training Focus:</label>
+            <select id="adaptive-type-select">
+                <option value="weakest">Weakest Songs</option>
+                <option value="easiest">Easiest Songs (Review)</option>
+                <option value="recently-incorrect">Recently Incorrect</option>
+            </select>
+        </div>
+    </section>
+
     <div id="loading-indicator" class="hidden">Loading songs...</div>
     <button id="start-game-btn" class="hidden">Start Game</button>
 

@@ -255,6 +255,39 @@ button:disabled {
     background-color: #218838;
 }
 
+/* Added styles for game setup and adaptive training options */
+#game-setup-options {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
+#game-setup-options h2 {
+    margin-top: 0;
+}
+
+#album-selection-container,
+#adaptive-options-container {
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px dashed #eee;
+    border-radius: 4px;
+}
+
+#album-checkboxes div,
+#adaptive-options-container select {
+    margin-top: 5px;
+}
+
+#album-checkboxes label {
+    margin-left: 5px;
+}
+
+.hidden {
+    display: none;
+}
+
 /* Basic Responsive Adjustments */
 @media (max-width: 600px) {
     #guessing-area input[type="text"],
