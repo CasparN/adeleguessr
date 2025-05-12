@@ -134,6 +134,12 @@ class Game {
             await this.audioPlayer.loadSong(this.currentSong.filePath);
             this.loadingAudio = false;
             this.uiManager.hideAudioLoading();
+
+            // Ensure the UI is fully reset to the active playing state for the new round.
+            // This handles visibility of guess form, skip button, play/pause button,
+            // and hides elements like the "Next Song" button from the round over state.
+            this.uiManager.showPlayingState(); 
+            
             this.audioPlayer.play();
             this.uiManager.updatePlayButton(true); 
             this.uiManager.resetGuessInput();

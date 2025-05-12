@@ -6,8 +6,7 @@ import UIManager from './UIManager.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const songProvider = new SongProvider('../songs.json');
-    // Make sure your index.html has an <audio> element with id="audio-player"
-    const audioPlayer = new AudioPlayer('audio-player', 10); // 10-second snippets
+    const audioPlayer = new AudioPlayer('audio-player');
     const uiManager = new UIManager(); 
 
     const game = new Game(songProvider, audioPlayer, uiManager);
