@@ -39,6 +39,13 @@ class UIManager {
         this.adaptiveOptionsContainer = document.getElementById('adaptive-options-container');
         this.adaptiveTypeSelect = document.getElementById('adaptive-type-select');
 
+        // Add audio loading indicator reference
+        this.audioLoadingIndicator = document.createElement('div');
+        this.audioLoadingIndicator.id = 'audio-loading';
+        this.audioLoadingIndicator.className = 'audio-loading hidden';
+        this.audioLoadingIndicator.textContent = 'Loading audio...';
+        document.getElementById('player-controls')?.appendChild(this.audioLoadingIndicator);
+
         // Initial state
         if (this.gameContainer) this.gameContainer.classList.add('hidden');
         if (this.gameOverScreenElement) this.gameOverScreenElement.classList.add('hidden');
@@ -410,6 +417,24 @@ class UIManager {
         if (this.loadingIndicator) this.loadingIndicator.classList.add('hidden');
         if (this.startButton) this.startButton.classList.add('hidden');
         if (this.gameContainer) this.gameContainer.classList.add('hidden');
+    }
+
+    showAudioLoading() {
+        if (this.audioLoadingIndicator) {
+            this.audioLoadingIndicator.classList.remove('hidden');
+            if (this.playPauseButton) {
+                this.playPauseButton.disabled = true;
+            }
+        }
+    }
+
+    hideAudioLoading() {
+        if (this.audioLoadingIndicator) {
+            this.audioLoadingIndicator.classList.add('hidden');
+            if (this.playPauseButton) {
+                this.playPauseButton.disabled = false;
+            }
+        }
     }
 }
 

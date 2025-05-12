@@ -17,6 +17,13 @@ Create an interactive web application where users can listen to snippets of Adel
 *   Display a round counter during gameplay (e.g., "Round 1/10").
 *   End game screen with final score, option to play again, and a summary of all songs played (title, guessed correctly/incorrectly, time taken for correct guesses).
 *   Play/Pause functionality for the current song.
+*   Training modes:
+    *   Album-specific training mode: Users can select specific albums to practice with.
+    *   Adaptive training mode: Based on user performance history, offers focused practice on:
+        *   Weakest songs (lowest correct guess percentage)
+        *   Easiest songs (for review and confidence building)
+        *   Recently incorrect songs
+    *   Performance tracking: Stores user performance data locally to inform adaptive training.
 
 ## 4. Technology Stack
 *   **Frontend:** HTML, CSS, JavaScript (ES6+)
@@ -29,13 +36,19 @@ Create an interactive web application where users can listen to snippets of Adel
 *   **Responsibilities:**
     *   Loading and managing the list of available songs. This list will need to include file paths, correct titles, and paths to album covers.
     *   Providing random songs for the game.
+    *   Managing song filtering for training modes (album-specific and adaptive).
 *   **Properties:**
-    *   `songList`: An array of objects, where each object contains `title`, `filePath`, `albumCoverPath`.
+    *   `allSongs`: Complete array of all available song objects.
+    *   `currentSongList`: Filtered array of songs for the current game mode.
+    *   `playedInCurrentSelection`: Set of song IDs played in the current filtered selection.
 *   **Methods:**
     *   `constructor(songDataUrlOrArray)`: Initializes with song data.
     *   `loadSongs()`: Fetches/processes the song list (e.g., from a JSON file or a hardcoded array).
-    *   `getRandomSong()`: Returns a random song object from `songList` that hasn't been played recently (to avoid immediate repeats).
-    *   `getSongCount()`: Returns the total number of songs.
+    *   `getRandomSong()`: Returns a random song object from currentSongList that hasn't been played recently.
+    *   `getSongCount()`: Returns the total number of available songs in the current selection.
+    *   `getAvailableAlbums()`: Returns a list of unique album names.
+    *   `applyAlbumFilter(selectedAlbums)`: Filters songs by selected albums.
+    *   `applyAdaptiveFilter(performanceData, adaptiveType)`: Filters songs based on user performance.
 
 ### `AudioPlayer.js`
 *   **Responsibilities:**
@@ -137,6 +150,18 @@ Create an interactive web application where users can listen to snippets of Adel
     *   `disableGuessing()`
     *   `showError(message)`
 
+### `StorageManager.js`
+*   **Responsibilities:**
+    *   Managing persistent storage of user performance data using localStorage.
+    *   Tracking song-specific performance metrics.
+*   **Properties:**
+    *   `STORAGE_KEY`: Key for localStorage data.
+*   **Methods:**
+    *   `getPerformanceData()`: Retrieves stored performance data.
+    *   `savePerformanceData(data)`: Saves performance data to localStorage.
+    *   `updateSongStats(songId, outcome, timeToGuess)`: Updates statistics for a specific song.
+    *   `getSongStats(songId)`: Retrieves statistics for a specific song.
+
 ## 6. HTML Structure (Conceptual - `index.html`)
 ```html
 <!DOCTYPE html>
@@ -211,7 +236,8 @@ Adele/
 │   ├── Game.js         // Core game logic and state
 │   ├── SongProvider.js // Manages song data and selection
 │   ├── AudioPlayer.js  // Handles audio playback
-│   └── UIManager.js    // Manages DOM updates and UI interactions
+│   ├── UIManager.js    // Manages DOM updates and UI interactions
+│   └── StorageManager.js // Manages persistent storage
 ├── music/              // Existing music files
 │   ├── Adele - 19 (2008)/
 │   │   ├── ... (song files)
@@ -236,7 +262,7 @@ Adele/
     *   Implement `getRandomSong()`.
 4.  **Implement `AudioPlayer.js`:**
     *   Basic audio loading and `play()` functionality.
-    *   Handle potential issues with FLAC playback in browsers (consider if conversion to MP3/OGG is needed for wider compatibility or if modern browsers handle FLAC sufficiently via `<audio>`). For now, assume FLAC works.
+    *   Handle potential issues with FLAC playback in browsers.
 5.  **Implement `UIManager.js` (Initial):**
     *   Get element references.
     *   Basic methods to update score and display album art.
@@ -247,14 +273,18 @@ Adele/
     *   Handle guess submission and skip song button clicks.
 8.  **Refine `UIManager.js`:**
     *   Implement feedback messages, game over screen.
-9.  **Refine `AudioPlayer.js`:**
-    *   Ensure robust playback (e.g., full song playback, dynamic scoring).
-10. **Styling and UX:** Improve CSS, add transitions, ensure responsiveness.
-11. **Testing:** Thoroughly test across different scenarios.
-12. **(Optional) Advanced Features:**
-    *   Difficulty levels (e.g., shorter snippets, more obscure songs, multiple choice answers).
-    *   Hints.
-    *   Timer per guess.
+9.  **Add Training Modes:**
+    *   Create `StorageManager.js` for performance data.
+    *   Add album selection UI and filtering in `SongProvider.js`.
+    *   Implement adaptive training mode with performance-based filtering.
+10. **Testing and Bug Fixes:**
+    *   Test album-specific training with various album selections.
+    *   Verify performance data is correctly stored and used.
+    *   Test adaptive mode with different performance scenarios.
+11. **Final Touches:**
+    *   Add error handling for missing performance data.
+    *   Ensure smooth transitions between game modes.
+    *   Add help text or tooltips for training modes.
 
 ## 11. Considerations & Challenges
 *   **FLAC Support & File Size:** FLAC files are lossless but can be large. This might lead to longer loading times for song snippets. Test browser compatibility for FLAC. If issues arise, batch conversion to a more web-friendly format like MP3 or OGG might be necessary.

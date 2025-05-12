@@ -1,10 +1,23 @@
-
 export default class StorageManager {
     constructor() {
         this.STORAGE_KEY = 'adeleGameUserPerformance';
+        this.isStorageAvailable = this.checkStorageAvailability();
+    }
+
+    checkStorageAvailability() {
+        try {
+            const testKey = '__test__';
+            localStorage.setItem(testKey, testKey);
+            localStorage.removeItem(testKey);
+            return true;
+        } catch (e) {
+            console.warn('localStorage is not available. Performance data will not be saved.');
+            return false;
+        }
     }
 
     getPerformanceData() {
+        if (!this.isStorageAvailable) return {};
         try {
             const data = localStorage.getItem(this.STORAGE_KEY);
             return data ? JSON.parse(data) : {};
@@ -15,6 +28,7 @@ export default class StorageManager {
     }
 
     savePerformanceData(data) {
+        if (!this.isStorageAvailable) return;
         try {
             localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
         } catch (error) {
@@ -27,7 +41,11 @@ export default class StorageManager {
             console.error("Cannot update song stats: songId is undefined");
             return;
         }
+
+        // Even if storage isn't available, we'll still update the in-memory data
+        // for the current session
         const allData = this.getPerformanceData();
+        
         if (!allData[songId]) {
             allData[songId] = {
                 playCount: 0,
@@ -36,13 +54,13 @@ export default class StorageManager {
                 endedCount: 0,
                 totalCorrectTime: 0,
                 lastAttemptCorrect: null,
-                // lastPlayedTimestamp: null // Consider adding if needed for 'recently-incorrect'
+                lastPlayedTimestamp: Date.now()
             };
         }
 
         const stats = allData[songId];
         stats.playCount = (stats.playCount || 0) + 1;
-        // stats.lastPlayedTimestamp = Date.now();
+        stats.lastPlayedTimestamp = Date.now();
 
         switch (outcome) {
             case 'correct':
@@ -56,7 +74,7 @@ export default class StorageManager {
                 stats.skipCount = (stats.skipCount || 0) + 1;
                 stats.lastAttemptCorrect = false;
                 break;
-            case 'ended': // Song ended naturally, user didn't guess
+            case 'ended':
                 stats.endedCount = (stats.endedCount || 0) + 1;
                 stats.lastAttemptCorrect = false;
                 break;
@@ -70,5 +88,20 @@ export default class StorageManager {
     getSongStats(songId) {
         const allData = this.getPerformanceData();
         return allData[songId] || null;
+    }
+
+    cleanupMissingItems(existingSongIds) {
+        if (!this.isStorageAvailable) return;
+        const allData = this.getPerformanceData();
+        const updatedData = {};
+        
+        // Only keep data for songs that still exist
+        for (const songId of existingSongIds) {
+            if (allData[songId]) {
+                updatedData[songId] = allData[songId];
+            }
+        }
+        
+        this.savePerformanceData(updatedData);
     }
 }

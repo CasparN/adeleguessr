@@ -103,6 +103,10 @@ class SongProvider {
         this.playedInCurrentSelection.clear();
     }
 
+    getAllSongIds() {
+        return this.allSongs.map(song => song.id);
+    }
+
     getRandomSong() {
         if (this.currentSongList.length === 0) {
             console.warn('Current song list is empty. Attempting to use all songs.');

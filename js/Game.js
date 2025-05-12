@@ -11,8 +11,10 @@ class Game {
         this.roundsPlayed = 0;
         this.maxRounds = 10; 
         this.gameActive = false;
+        this.loadingAudio = false; // Add loadingAudio state
         this.playedSongsHistory = [];
         this.gameMode = 'standard'; // Add game mode tracking
+        this.selectedAlbums = []; // Add selectedAlbums state
         this.adaptiveType = null; // For adaptive training mode
 
         this.basePointsPerSong = 100;
@@ -28,6 +30,10 @@ class Game {
             this.uiManager.showError("No songs loaded. Please check the song data.");
             return;
         }
+
+        // Clean up performance data for non-existent songs
+        const existingSongIds = this.songProvider.getAllSongIds();
+        this.storageManager.cleanupMissingItems(existingSongIds);
         
         // Populate album choices for album-specific training
         const albums = this.songProvider.getAvailableAlbums();
@@ -36,9 +42,24 @@ class Game {
         this.maxRounds = Math.min(this.maxRounds, this.songProvider.getSongCount());
         this.uiManager.updateRoundCounter(0, this.maxRounds);
         this.uiManager.showIdleState();
+
+        // Disable game mode changes during gameplay
+        const setupOptions = document.getElementById('game-setup-options');
+        if (setupOptions) {
+            setupOptions.addEventListener('change', (e) => {
+                if (this.gameActive) {
+                    e.preventDefault();
+                    alert('Please finish or restart the current game before changing game mode.');
+                    // Reset the radio button to current mode
+                    const currentMode = document.getElementById(`mode-${this.gameMode}`);
+                    if (currentMode) currentMode.checked = true;
+                    return false;
+                }
+            });
+        }
     }
 
-    startGame() {
+    async startGame() {
         if (this.songProvider.getSongCount() === 0) {
             console.error("Cannot start game: No songs loaded.");
             this.uiManager.showError("Cannot start game: No songs available.");
@@ -50,12 +71,12 @@ class Game {
         
         switch (this.gameMode) {
             case 'album-train':
-                const selectedAlbums = this.uiManager.getSelectedAlbums();
-                if (selectedAlbums.length === 0) {
+                this.selectedAlbums = this.uiManager.getSelectedAlbums();
+                if (this.selectedAlbums.length === 0) {
                     this.uiManager.showError("Please select at least one album for training.");
                     return;
                 }
-                this.songProvider.applyAlbumFilter(selectedAlbums);
+                this.songProvider.applyAlbumFilter(this.selectedAlbums);
                 break;
                 
             case 'adaptive-train':
@@ -82,10 +103,10 @@ class Game {
         this.uiManager.updateScore(this.score);
         this.uiManager.hideGameOver();
         this.uiManager.showPlayingState();
-        this.nextRound();
+        await this.nextRound();
     }
 
-    nextRound() {
+    async nextRound() {
         if (!this.gameActive) return; 
         if (this.roundsPlayed >= this.maxRounds) {
             this.endGame();
@@ -104,14 +125,27 @@ class Game {
         this.roundsPlayed++;
         this.uiManager.updateRoundCounter(this.roundsPlayed, this.maxRounds);
         this.uiManager.displaySongInfo(this.currentSong, false); 
-        this.audioPlayer.loadSong(this.currentSong.filePath);
-        this.audioPlayer.play();
-        this.uiManager.updatePlayButton(true); 
-        this.uiManager.resetGuessInput();
-        this.uiManager.enableGuessing();
-        this.uiManager.clearFeedback();
-        if(this.uiManager.currentSongTitleElement) this.uiManager.currentSongTitleElement.classList.add('hidden');
-        if(this.uiManager.nextSongButtonElement) this.uiManager.nextSongButtonElement.classList.add('hidden');
+
+        // Add audio loading indicator
+        this.loadingAudio = true;
+        this.uiManager.showAudioLoading();
+        
+        try {
+            await this.audioPlayer.loadSong(this.currentSong.filePath);
+            this.loadingAudio = false;
+            this.uiManager.hideAudioLoading();
+            this.audioPlayer.play();
+            this.uiManager.updatePlayButton(true); 
+            this.uiManager.resetGuessInput();
+            this.uiManager.enableGuessing();
+            this.uiManager.clearFeedback();
+        } catch (error) {
+            console.error("Error loading audio:", error);
+            this.loadingAudio = false;
+            this.uiManager.hideAudioLoading();
+            this.uiManager.showError("Failed to load audio. Skipping to next song...");
+            setTimeout(() => this.nextRound(), 2000);
+        }
     }
 
     handleGuess(userGuess) {
