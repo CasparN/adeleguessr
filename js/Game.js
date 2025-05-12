@@ -19,6 +19,9 @@ class Game {
 
         this.basePointsPerSong = 100;
 
+        this.lastGameSettings = null; // To store settings for "play same again"
+        this.currentGameMode = 'standard'; // Tracks the mode for the current/last game
+
         this.uiManager.setupEventListeners(this);
         this.audioPlayer.setOnSongEnd(() => this.handleSongEnd());
     }
@@ -59,51 +62,78 @@ class Game {
         }
     }
 
-    async startGame() {
-        if (this.songProvider.getSongCount() === 0) {
-            console.error("Cannot start game: No songs loaded.");
-            this.uiManager.showError("Cannot start game: No songs available.");
-            return;
-        }
-
-        // Get game mode and apply appropriate filters
-        this.gameMode = this.uiManager.getSelectedGameMode();
-        
-        switch (this.gameMode) {
-            case 'album-train':
-                this.selectedAlbums = this.uiManager.getSelectedAlbums();
-                if (this.selectedAlbums.length === 0) {
-                    this.uiManager.showError("Please select at least one album for training.");
-                    return;
-                }
-                this.songProvider.applyAlbumFilter(this.selectedAlbums);
-                break;
-                
-            case 'adaptive-train':
-                this.adaptiveType = this.uiManager.getSelectedAdaptiveType();
-                const performanceData = this.storageManager.getPerformanceData();
-                this.songProvider.applyAdaptiveFilter(performanceData, this.adaptiveType);
-                break;
-                
-            default: // 'standard'
-                this.songProvider.applyAlbumFilter([]); // Reset to all songs
-                break;
-        }
-
-        // Check if we have songs after applying filters
-        if (this.songProvider.getSongCount() === 0) {
-            this.uiManager.showError("No songs available for the selected mode. Please try different options.");
-            return;
-        }
-
+    resetGameStats() {
         this.score = 0;
         this.roundsPlayed = 0;
         this.playedSongsHistory = [];
+    }
+
+    async startGame(settings = null) {
         this.gameActive = true;
-        this.uiManager.updateScore(this.score);
-        this.uiManager.hideGameOver();
-        this.uiManager.showPlayingState();
-        await this.nextRound();
+        this.uiManager.showAudioLoading();
+        this.resetGameStats(); // Reset stats for any new game start
+
+        let gameMode;
+        let selectedAlbums = [];
+        let adaptiveType = 'weakest'; // Default for adaptive
+
+        if (settings) { // Used for "Play Same Settings Again"
+            gameMode = settings.mode;
+            selectedAlbums = settings.albums || [];
+            adaptiveType = settings.adaptiveType || 'weakest';
+            // this.lastGameSettings is already set and is 'settings'
+        } else { // New game from UI ("Start Game" or "Play New Round")
+            gameMode = this.uiManager.getSelectedGameMode();
+            if (gameMode === 'album-train') {
+                selectedAlbums = this.uiManager.getSelectedAlbums();
+                if (selectedAlbums.length === 0) {
+                    this.uiManager.showError("Please select at least one album for album training mode.");
+                    this.uiManager.showIdleState();
+                    this.uiManager.hideAudioLoading();
+                    return;
+                }
+            } else if (gameMode === 'adaptive-train') {
+                adaptiveType = this.uiManager.getSelectedAdaptiveType();
+            }
+            // Store these settings for the current game session
+            this.lastGameSettings = { mode: gameMode, albums: selectedAlbums, adaptiveType: adaptiveType };
+        }
+        
+        this.currentGameMode = gameMode; // Store for current game
+
+        try {
+            // Ensure songs are loaded (usually done in initializeGame, but good check)
+            if (!this.songProvider.allSongs || this.songProvider.allSongs.length === 0) {
+                await this.songProvider.loadSongs();
+            }
+
+            // Filter songs based on mode
+            if (gameMode === 'standard') {
+                this.songProvider.resetFilters();
+            } else if (gameMode === 'album-train') {
+                await this.songProvider.applyAlbumFilter(selectedAlbums);
+            } else if (gameMode === 'adaptive-train') {
+                const performanceData = this.storageManager.getPerformanceData();
+                await this.songProvider.applyAdaptiveFilter(performanceData, adaptiveType);
+            }
+
+            if (this.songProvider.getSongCount() === 0) {
+                this.uiManager.showError("No songs available for the selected game mode/filters. Please change settings.");
+                this.uiManager.showIdleState(); // Go back to selection
+                this.uiManager.hideAudioLoading();
+                this.lastGameSettings = null; // Clear invalid settings
+                return;
+            }
+            
+            this.uiManager.updateScore(this.score);
+            this.uiManager.updateRoundCounter(this.roundsPlayed, this.maxRounds);
+            await this.nextRound();
+        } catch (error) {
+            console.error("Error starting game:", error);
+            this.uiManager.showError("Failed to start the game. Check console for details.");
+            this.uiManager.showIdleState();
+            this.uiManager.hideAudioLoading();
+        }
     }
 
     async nextRound() {
@@ -249,7 +279,55 @@ class Game {
     endGame() {
         this.gameActive = false;
         this.audioPlayer.stop();
-        this.uiManager.showGameOver(this.score, this.maxRounds, this.playedSongsHistory);
+        this.uiManager.updatePlayButton(false);
+        this.uiManager.disableGuessing();
+        this.uiManager.clearFeedback();
+
+        let gameModeDetails = "Mode: Unknown";
+        if (this.lastGameSettings) { // Use lastGameSettings as it's the definitive record for the completed game
+            switch (this.lastGameSettings.mode) {
+                case 'standard':
+                    gameModeDetails = "Mode: Standard";
+                    break;
+                case 'album-train':
+                    const albums = this.lastGameSettings.albums && this.lastGameSettings.albums.length > 0 
+                                   ? this.lastGameSettings.albums.join(', ') 
+                                   : 'None Selected';
+                    gameModeDetails = `Mode: Album Training (Albums: ${albums})`;
+                    break;
+                case 'adaptive-train':
+                    let typeDesc = this.lastGameSettings.adaptiveType;
+                    if (this.lastGameSettings.adaptiveType === 'weakest') typeDesc = 'Weakest Songs';
+                    else if (this.lastGameSettings.adaptiveType === 'least_played') typeDesc = 'Least Played Songs';
+                    gameModeDetails = `Mode: Adaptive Training (Type: ${typeDesc})`;
+                    break;
+                default:
+                    gameModeDetails = `Mode: ${this.lastGameSettings.mode}`;
+            }
+        } else {
+             gameModeDetails = `Mode: ${this.currentGameMode || 'Unknown'}`;
+        }
+
+        this.uiManager.showGameOver(this.score, this.roundsPlayed, this.playedSongsHistory, gameModeDetails);
+    }
+
+    restartSameGame() {
+        if (!this.lastGameSettings) {
+            console.warn("No last game settings found to restart. Returning to main menu.");
+            this.returnToMainMenu();
+            return;
+        }
+        this.uiManager.hideGameOver();
+        this.startGame(this.lastGameSettings); // Pass the stored settings
+    }
+
+    returnToMainMenu() {
+        this.uiManager.hideGameOver();
+        this.resetGameStats();
+        this.gameActive = false;
+        this.lastGameSettings = null; // Clear settings
+        this.songProvider.resetFilters(); // Reset song provider to all songs
+        this.uiManager.showIdleState(); // Show main menu/setup screen
     }
 
     normalizeString(str) {

@@ -71,7 +71,8 @@
     </main>
 
     <section id="game-over-screen" class="hidden">
-        <h2>Game Over!</h2>
+        <h2 id="round-over-title">Round Over!</h2>
+        <p id="game-mode-summary"></p> <!-- Added for game mode display -->
         <p>Your final score: <span id="final-score">0</span> (out of <span id="max-rounds-played">0</span> rounds)</p>
         <div id="played-songs-container">
             <h3>Round Summary:</h3>
@@ -79,7 +80,9 @@
                 <!-- Song results will be populated here by JavaScript -->
             </ul>
         </div>
-        <button id="play-again-btn">Play Again</button>
+        <button id="play-again-btn">Play New Round</button> <!-- Renamed for clarity -->
+        <button id="play-same-round-btn">Play Same Settings Again</button> <!-- New Button -->
+        <button id="main-menu-btn">Main Menu</button> <!-- New Button -->
     </section>
 
     <script type="module" src="js/main.js"></script>

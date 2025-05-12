@@ -22,7 +22,10 @@ class UIManager {
         this.gameOverScreenElement = document.getElementById('game-over-screen');
         this.finalScoreElement = document.getElementById('final-score');
         this.maxRoundsPlayedElement = document.getElementById('max-rounds-played');
-        this.playAgainButtonElement = document.getElementById('play-again-btn');
+        this.playAgainButtonElement = document.getElementById('play-again-btn'); // "Play New Round"
+        this.playSameRoundButton = document.getElementById('play-same-round-btn');
+        this.mainMenuButton = document.getElementById('main-menu-btn');
+        this.gameModeSummaryElement = document.getElementById('game-mode-summary');
 
         // Game Over Summary Elements
         this.playedSongsContainerElement = document.getElementById('played-songs-container');
@@ -97,7 +100,21 @@ class UIManager {
                 this.hideGameOver();
                 // Reset UI for a new game start, Game.js->startGame will call showPlayingState
                 this.displaySongInfo(null, false); 
-                gameInstance.startGame();
+                gameInstance.startGame(); // Starts a new game with current UI selections
+            });
+        }
+
+        if (this.playSameRoundButton) {
+            this.playSameRoundButton.addEventListener('click', () => {
+                // gameInstance will handle hiding game over screen and restarting
+                gameInstance.restartSameGame();
+            });
+        }
+
+        if (this.mainMenuButton) {
+            this.mainMenuButton.addEventListener('click', () => {
+                // gameInstance will handle hiding game over screen and resetting state
+                gameInstance.returnToMainMenu();
             });
         }
 
@@ -153,16 +170,16 @@ class UIManager {
         let message = '';
 
         if (isSongEnd) {
-            message = `Song ended! The song was: ${correctAnswer}.`;
+            message = `Song ended!`;
             this.feedbackMessageElement.classList.add('ended');
         } else if (isSkip) {
-            message = `Skipped! The song was: ${correctAnswer}.`;
+            message = `Skipped!`;
             this.feedbackMessageElement.classList.add('skipped');
         } else if (isCorrect) {
-            message = `Correct! +${pointsEarned} points.`; // Removed correctAnswer from here
+            message = `Correct! +${pointsEarned} points.`;
             this.feedbackMessageElement.classList.add('correct');
         } else {
-            message = `Incorrect. The song was: ${correctAnswer}.`;
+            message = `Incorrect. No points.`;
             this.feedbackMessageElement.classList.add('incorrect');
         }
         this.feedbackMessageElement.textContent = message;
@@ -330,9 +347,18 @@ class UIManager {
         }
     }
 
-    showGameOver(finalScore, maxRounds, playedSongsHistory) {
+    showGameOver(finalScore, maxRounds, playedSongsHistory, gameModeDetails) {
         if (this.finalScoreElement) this.finalScoreElement.textContent = finalScore;
         if (this.maxRoundsPlayedElement) this.maxRoundsPlayedElement.textContent = maxRounds;
+        
+        if (this.gameModeSummaryElement && gameModeDetails) {
+            this.gameModeSummaryElement.textContent = gameModeDetails;
+            this.gameModeSummaryElement.classList.remove('hidden');
+        } else if (this.gameModeSummaryElement) {
+            this.gameModeSummaryElement.textContent = ''; // Clear if no details
+            this.gameModeSummaryElement.classList.add('hidden');
+        }
+
         if (this.gameOverScreenElement) this.gameOverScreenElement.classList.remove('hidden');
         if (this.gameContainer) this.gameContainer.classList.add('hidden');
         if (this.loadingIndicator) this.loadingIndicator.classList.add('hidden');
@@ -350,6 +376,10 @@ class UIManager {
         if (this.gameOverScreenElement) this.gameOverScreenElement.classList.add('hidden');
         if (this.playedSongsListElement) this.playedSongsListElement.innerHTML = ''; // Clear summary
         if (this.playedSongsContainerElement) this.playedSongsContainerElement.classList.add('hidden');
+        if (this.gameModeSummaryElement) {
+            this.gameModeSummaryElement.textContent = '';
+            this.gameModeSummaryElement.classList.add('hidden');
+        }
     }
 
     enableGuessing() {

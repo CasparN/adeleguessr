@@ -27,6 +27,16 @@ class SongProvider {
         this.resetPlayedSongsInCurrentSelection();
     }
 
+    resetFilters() {
+        if (this.allSongs.length > 0) {
+            this.currentSongList = [...this.allSongs];
+        } else {
+            // This case should ideally not happen if loadSongs was successful
+            this.currentSongList = [];
+        }
+        // console.log("SongProvider filters reset. Current song count:", this.currentSongList.length);
+    }
+
     getAvailableAlbums() {
         if (!this.allSongs || this.allSongs.length === 0) return [];
         const albumNames = this.allSongs.map(song => song.album).filter(album => album);
