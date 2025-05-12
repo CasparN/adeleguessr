@@ -3,6 +3,7 @@ import SongProvider from './SongProvider.js';
 import AudioPlayer from './AudioPlayer.js';
 import UIManager from './UIManager.js';
 
+
 document.addEventListener('DOMContentLoaded', () => {
     const songProvider = new SongProvider('../songs.json');
     // Make sure your index.html has an <audio> element with id="audio-player"

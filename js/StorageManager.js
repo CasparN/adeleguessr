@@ -1,4 +1,5 @@
-class StorageManager {
+
+export default class StorageManager {
     constructor() {
         this.STORAGE_KEY = 'adeleGameUserPerformance';
     }
@@ -71,5 +72,3 @@ class StorageManager {
         return allData[songId] || null;
     }
 }
-
-export default StorageManager;

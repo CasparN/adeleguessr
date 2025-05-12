@@ -1,15 +1,19 @@
+import StorageManager from './StorageManager.js';
 class Game {
     constructor(songProvider, audioPlayer, uiManager) {
         this.songProvider = songProvider;
         this.audioPlayer = audioPlayer;
         this.uiManager = uiManager;
+        this.storageManager = new StorageManager(); // Add StorageManager
 
         this.currentSong = null;
         this.score = 0;
         this.roundsPlayed = 0;
         this.maxRounds = 10; 
         this.gameActive = false;
-        this.playedSongsHistory = []; // To store details of each round
+        this.playedSongsHistory = [];
+        this.gameMode = 'standard'; // Add game mode tracking
+        this.adaptiveType = null; // For adaptive training mode
 
         this.basePointsPerSong = 100;
 
@@ -24,8 +28,13 @@ class Game {
             this.uiManager.showError("No songs loaded. Please check the song data.");
             return;
         }
+        
+        // Populate album choices for album-specific training
+        const albums = this.songProvider.getAvailableAlbums();
+        this.uiManager.populateAlbumCheckboxes(albums);
+        
         this.maxRounds = Math.min(this.maxRounds, this.songProvider.getSongCount());
-        this.uiManager.updateRoundCounter(0, this.maxRounds); // Initialize with 0 rounds played
+        this.uiManager.updateRoundCounter(0, this.maxRounds);
         this.uiManager.showIdleState();
     }
 
@@ -35,11 +44,41 @@ class Game {
             this.uiManager.showError("Cannot start game: No songs available.");
             return;
         }
+
+        // Get game mode and apply appropriate filters
+        this.gameMode = this.uiManager.getSelectedGameMode();
+        
+        switch (this.gameMode) {
+            case 'album-train':
+                const selectedAlbums = this.uiManager.getSelectedAlbums();
+                if (selectedAlbums.length === 0) {
+                    this.uiManager.showError("Please select at least one album for training.");
+                    return;
+                }
+                this.songProvider.applyAlbumFilter(selectedAlbums);
+                break;
+                
+            case 'adaptive-train':
+                this.adaptiveType = this.uiManager.getSelectedAdaptiveType();
+                const performanceData = this.storageManager.getPerformanceData();
+                this.songProvider.applyAdaptiveFilter(performanceData, this.adaptiveType);
+                break;
+                
+            default: // 'standard'
+                this.songProvider.applyAlbumFilter([]); // Reset to all songs
+                break;
+        }
+
+        // Check if we have songs after applying filters
+        if (this.songProvider.getSongCount() === 0) {
+            this.uiManager.showError("No songs available for the selected mode. Please try different options.");
+            return;
+        }
+
         this.score = 0;
         this.roundsPlayed = 0;
-        this.playedSongsHistory = []; // Reset history for a new game
+        this.playedSongsHistory = [];
         this.gameActive = true;
-        this.songProvider.playedSongs.clear(); 
         this.uiManager.updateScore(this.score);
         this.uiManager.hideGameOver();
         this.uiManager.showPlayingState();
@@ -106,6 +145,13 @@ class Game {
             status: ''
         };
 
+        // Update performance data in StorageManager
+        this.storageManager.updateSongStats(
+            this.currentSong.id,
+            isCorrect ? 'correct' : 'incorrect',
+            isCorrect ? elapsedTimeMs : null
+        );
+
         if (isCorrect) {
             pointsEarned = this.calculatePoints(elapsedTimeMs);
             this.score += pointsEarned;
@@ -117,6 +163,7 @@ class Game {
             this.uiManager.showFeedback(false, correctAnswer);
             songRecord.status = 'Incorrect';
         }
+
         this.playedSongsHistory.push(songRecord);
         this.uiManager.updateScore(this.score);
         this.uiManager.displaySongInfo(this.currentSong, true); 
@@ -140,9 +187,11 @@ class Game {
     }
 
     handleSongEnd() {
-        if (!this.gameActive || !this.currentSong) {
-            return;
-        }
+        if (!this.gameActive || !this.currentSong) return;
+
+        // Update performance data in StorageManager
+        this.storageManager.updateSongStats(this.currentSong.id, 'ended');
+        
         this.uiManager.showFeedback(false, this.currentSong.title, false, 0, true); 
         this.uiManager.displaySongInfo(this.currentSong, true); 
         this.uiManager.updateScore(this.score); 
@@ -181,11 +230,15 @@ class Game {
 
     skipSong() {
         if (!this.gameActive || !this.currentSong) return;
+        
         this.audioPlayer.stop();
         this.uiManager.updatePlayButton(false);
         this.uiManager.showFeedback(false, this.currentSong.title, true); 
         this.uiManager.displaySongInfo(this.currentSong, true); 
         this.uiManager.showRoundOverState();
+
+        // Update performance data in StorageManager
+        this.storageManager.updateSongStats(this.currentSong.id, 'skipped');
 
         this.playedSongsHistory.push({
             songTitle: this.currentSong.title,
