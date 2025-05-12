@@ -288,6 +288,25 @@ button:disabled {
     display: none;
 }
 
+/* Styles for audio loading indicator */
+.audio-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--surface-2);
+    color: var(--text);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-sm);
+    font-size: 0.9em;
+    animation: fadeInOut 1.5s ease-in-out infinite;
+}
+
+@keyframes fadeInOut {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
 /* Basic Responsive Adjustments */
 @media (max-width: 600px) {
     #guessing-area input[type="text"],
