@@ -1,10 +1,13 @@
 import StorageManager from './StorageManager.js';
+import PerformanceTracker from './PerformanceTracker.js'; // Import PerformanceTracker
+
 class Game {
     constructor(songProvider, audioPlayer, uiManager) {
         this.songProvider = songProvider;
         this.audioPlayer = audioPlayer;
         this.uiManager = uiManager;
-        this.storageManager = new StorageManager(); // Add StorageManager
+        this.storageManager = new StorageManager();
+        this.performanceTracker = new PerformanceTracker(this.storageManager); // Instantiate PerformanceTracker
 
         this.currentSong = null;
         this.score = 0;
@@ -29,22 +32,29 @@ class Game {
     async initializeGame() {
         this.uiManager.showLoadingState();
         await this.songProvider.loadSongs();
-        if (this.songProvider.getSongCount() === 0) {
-            this.uiManager.showError("No songs loaded. Please check the song data.");
-            return;
-        }
-
-        // Clean up performance data for non-existent songs
-        const existingSongIds = this.songProvider.getAllSongIds();
-        this.storageManager.cleanupMissingItems(existingSongIds);
         
-        // Populate album choices for album-specific training
-        const albums = this.songProvider.getAvailableAlbums();
+        let songsAvailable = this.songProvider.allSongs && this.songProvider.allSongs.length > 0;
+
+        if (!songsAvailable) {
+            this.uiManager.showError("No songs loaded. Please check song data. Performance stats and gameplay may be affected.");
+            // Display empty/error stats if songs didn't load
+            this.uiManager.displayPerformanceStats({ 
+                bestSongs: [], worstSongs: [], overallAccuracy: 0, totalPlays: 0, 
+                error: "Song data unavailable" 
+            });
+        } else {
+            const existingSongIds = this.songProvider.getAllSongIds();
+            this.storageManager.cleanupMissingItems(existingSongIds);
+        }
+        
+        const albums = songsAvailable ? this.songProvider.getAvailableAlbums() : [];
         this.uiManager.populateAlbumCheckboxes(albums);
         
-        this.maxRounds = Math.min(this.maxRounds, this.songProvider.getSongCount());
+        this.maxRounds = songsAvailable ? Math.min(this.maxRounds, this.songProvider.getSongCount()) : 0;
         this.uiManager.updateRoundCounter(0, this.maxRounds);
         this.uiManager.showIdleState();
+        // Always call updateAndDisplayPerformanceStats; it will handle empty/error state if songsAvailable is false
+        this.updateAndDisplayPerformanceStats(); 
 
         // Disable game mode changes during gameplay
         const setupOptions = document.getElementById('game-setup-options');
@@ -60,6 +70,26 @@ class Game {
                 }
             });
         }
+    }
+
+    // Method to calculate and display performance stats
+    updateAndDisplayPerformanceStats() {
+        if (!this.performanceTracker) return;
+
+        const currentAllSongs = this.songProvider.allSongs;
+
+        if (!currentAllSongs || currentAllSongs.length === 0) {
+            this.uiManager.displayPerformanceStats({ 
+                bestSongs: [], 
+                worstSongs: [], 
+                overallAccuracy: 0, 
+                totalPlays: 0, 
+                error: "Song data currently unavailable for stats." 
+            });
+            return;
+        }
+        const stats = this.performanceTracker.calculatePerformanceMetrics(currentAllSongs); 
+        this.uiManager.displayPerformanceStats(stats);
     }
 
     resetGameStats() {
@@ -102,9 +132,16 @@ class Game {
         this.currentGameMode = gameMode; // Store for current game
 
         try {
-            // Ensure songs are loaded (usually done in initializeGame, but good check)
             if (!this.songProvider.allSongs || this.songProvider.allSongs.length === 0) {
-                await this.songProvider.loadSongs();
+                console.warn("startGame: Song list is empty or not loaded. Attempting to reload songs.");
+                await this.songProvider.loadSongs(); 
+                if (!this.songProvider.allSongs || this.songProvider.allSongs.length === 0) {
+                    this.uiManager.showError("Failed to load songs. Cannot start game. Please try refreshing the page.");
+                    this.uiManager.showIdleState();
+                    this.uiManager.hideAudioLoading();
+                    this.lastGameSettings = null; 
+                    return;
+                }
             }
 
             // Filter songs based on mode
@@ -114,11 +151,11 @@ class Game {
                 await this.songProvider.applyAlbumFilter(selectedAlbums);
             } else if (gameMode === 'adaptive-train') {
                 const performanceData = this.storageManager.getPerformanceData();
-                await this.songProvider.applyAdaptiveFilter(performanceData, adaptiveType);
+                await this.songProvider.applyAdaptiveFilter(performanceData, adaptiveType, this.songProvider.allSongs);
             }
 
             if (this.songProvider.getSongCount() === 0) {
-                this.uiManager.showError("No songs available for the selected game mode/filters. Please change settings.");
+                this.uiManager.showError("No songs available for the selected game mode/filters. Please change settings or refresh.");
                 this.uiManager.showIdleState(); // Go back to selection
                 this.uiManager.hideAudioLoading();
                 this.lastGameSettings = null; // Clear invalid settings
@@ -328,6 +365,7 @@ class Game {
         this.lastGameSettings = null; // Clear settings
         this.songProvider.resetFilters(); // Reset song provider to all songs
         this.uiManager.showIdleState(); // Show main menu/setup screen
+        this.updateAndDisplayPerformanceStats(); // Refresh stats when returning to main menu
     }
 
     normalizeString(str) {

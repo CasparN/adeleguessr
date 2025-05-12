@@ -70,6 +70,9 @@ export default class StorageManager {
                 }
                 stats.lastAttemptCorrect = true;
                 break;
+            case 'incorrect': // Added explicit case for incorrect
+                stats.lastAttemptCorrect = false;
+                break;
             case 'skipped':
                 stats.skipCount = (stats.skipCount || 0) + 1;
                 stats.lastAttemptCorrect = false;

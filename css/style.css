@@ -193,6 +193,12 @@ button:disabled {
     margin-bottom: 10px;
 }
 
+#game-over-screen h3 {
+    margin-top: 15px;
+    margin-bottom: 5px;
+    color: #eee;
+}
+
 #played-songs-container {
     width: 100%;
     max-width: 500px;
@@ -207,42 +213,40 @@ button:disabled {
 #played-songs-list {
     list-style-type: none;
     padding: 0;
-    max-height: 300px;
+    max-height: 150px; /* Adjust as needed */
     overflow-y: auto;
-    border: 1px solid #eee;
+    border: 1px solid #444;
     border-radius: 4px;
+    background-color: #282828;
 }
 
-.played-song-item {
-    display: flex;
-    align-items: center;
+#played-songs-list li {
     padding: 8px 10px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #383838;
+    font-size: 0.9em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.played-song-item:last-child {
+#played-songs-list li:last-child {
     border-bottom: none;
 }
 
-.summary-album-cover {
-    width: 40px;
-    height: 40px;
-    border-radius: 4px;
+#played-songs-list .song-title {
+    font-weight: bold;
     margin-right: 10px;
-    object-fit: cover;
 }
 
-.played-song-item .song-result-status {
-    margin-left: auto;
-    font-size: 0.9em;
+#played-songs-list .song-status-correct {
+    color: #4CAF50; /* Green */
 }
-
-.played-song-item .guessed-correctly {
-    color: green;
+#played-songs-list .song-status-incorrect {
+    color: #F44336; /* Red */
 }
-
-.played-song-item .guessed-incorrectly {
-    color: red;
+#played-songs-list .song-status-skipped,
+#played-songs-list .song-status-ended {
+    color: #FFC107; /* Amber */
 }
 
 #play-again-btn {
@@ -305,6 +309,64 @@ button:disabled {
 @keyframes fadeInOut {
     0%, 100% { opacity: 0.5; }
     50% { opacity: 1; }
+}
+
+/* Performance Stats Section */
+#performance-stats {
+    background-color: #2a2a2a;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+    border: 1px solid #444;
+}
+
+#performance-stats h2 {
+    color: #eee;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+#performance-stats .stats-column {
+    float: left;
+    width: 48%;
+    margin-right: 4%;
+    box-sizing: border-box;
+}
+
+#performance-stats .stats-column:last-child {
+    margin-right: 0;
+}
+
+#performance-stats h3 {
+    color: #ccc;
+    border-bottom: 1px solid #555;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+
+#performance-stats ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+#performance-stats ul li {
+    background-color: #333;
+    padding: 8px;
+    margin-bottom: 5px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    color: #ddd;
+}
+#performance-stats ul li:empty {
+    display: none;
+}
+
+#overall-stats {
+    clear: both;
+    padding-top: 15px;
+    text-align: center;
+    color: #bbb;
+    font-size: 1.1em;
 }
 
 /* Basic Responsive Adjustments */

@@ -43,6 +43,25 @@
         </div>
     </section>
 
+    <section id="performance-stats" class="hidden">
+        <h2>Your Performance Snapshot</h2>
+        <div class="stats-column">
+            <h3>Best Songs (Top 5)</h3>
+            <ul id="best-songs-list">
+                <!-- Populated by JS -->
+            </ul>
+        </div>
+        <div class="stats-column">
+            <h3>Songs to Practice (Top 5)</h3>
+            <ul id="worst-songs-list">
+                <!-- Populated by JS -->
+            </ul>
+        </div>
+        <div id="overall-stats" style="clear: both; padding-top: 10px;">
+            <!-- Overall stats like accuracy can go here -->
+        </div>
+    </section>
+
     <div id="loading-indicator" class="hidden">Loading songs...</div>
     <button id="start-game-btn" class="hidden">Start Game</button>
 
@@ -80,9 +99,8 @@
                 <!-- Song results will be populated here by JavaScript -->
             </ul>
         </div>
-        <button id="play-again-btn">Play New Round</button> <!-- Renamed for clarity -->
-        <button id="play-same-round-btn">Play Same Settings Again</button> <!-- New Button -->
-        <button id="main-menu-btn">Main Menu</button> <!-- New Button -->
+        <button id="play-same-round-btn">Play Again</button>
+        <button id="main-menu-btn">Main Menu</button>
     </section>
 
     <script type="module" src="js/main.js"></script>

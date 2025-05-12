@@ -116,3 +116,11 @@ Next Steps:
 -   Thoroughly test the application for game flow, scoring accuracy, UI responsiveness, and error handling.
 -   Verify the `placeholder.png` image path and consider a more robust fallback for `albumCoverPath` in `UIManager.js` if a song's specific cover path is invalid.
 -   Consider improving error handling in the `AudioPlayer.js` constructor if the audio HTML element isn't found.
+
+## May 12, 2025
+- Implemented new training modes (Album-specific and Adaptive Training Mode) after user review of implementation plan.
+- Added `StorageManager.js` for tracking user performance data.
+- Updated `SongProvider.js` to support filtering songs by album and performance data.
+- Modified `UIManager.js` to add game mode selection UI.
+- Updated `Game.js` to integrate training modes and performance tracking.
+- Updated project documentation with new features and development steps.

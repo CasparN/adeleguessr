@@ -22,10 +22,15 @@ class UIManager {
         this.gameOverScreenElement = document.getElementById('game-over-screen');
         this.finalScoreElement = document.getElementById('final-score');
         this.maxRoundsPlayedElement = document.getElementById('max-rounds-played');
-        this.playAgainButtonElement = document.getElementById('play-again-btn'); // "Play New Round"
         this.playSameRoundButton = document.getElementById('play-same-round-btn');
         this.mainMenuButton = document.getElementById('main-menu-btn');
         this.gameModeSummaryElement = document.getElementById('game-mode-summary');
+
+        // Performance Stats Elements
+        this.performanceStatsSection = document.getElementById('performance-stats');
+        this.bestSongsListElement = document.getElementById('best-songs-list');
+        this.worstSongsListElement = document.getElementById('worst-songs-list');
+        this.overallStatsElement = document.getElementById('overall-stats'); // For overall accuracy etc.
 
         // Game Over Summary Elements
         this.playedSongsContainerElement = document.getElementById('played-songs-container');
@@ -94,14 +99,6 @@ class UIManager {
         }
         if (this.nextSongButtonElement) {
             this.nextSongButtonElement.addEventListener('click', () => gameInstance.nextRound());
-        }
-        if (this.playAgainButtonElement) {
-            this.playAgainButtonElement.addEventListener('click', () => {
-                this.hideGameOver();
-                // Reset UI for a new game start, Game.js->startGame will call showPlayingState
-                this.displaySongInfo(null, false); 
-                gameInstance.startGame(); // Starts a new game with current UI selections
-            });
         }
 
         if (this.playSameRoundButton) {
@@ -301,6 +298,9 @@ class UIManager {
 
         this.clearFeedback();
         this.displaySongInfo(null, false); // Ensure album art is placeholder and title hidden
+
+        // Potentially refresh and show performance stats here
+        // This will be triggered by Game.js calling a method that then calls this
     }
     
     showPlayingState() {
@@ -436,6 +436,75 @@ class UIManager {
         this.playedSongsContainerElement.classList.remove('hidden');
     }
     
+    displayPerformanceStats(stats) {
+        if (!this.performanceStatsSection || !this.bestSongsListElement || !this.worstSongsListElement || !this.overallStatsElement) {
+            console.warn("Performance stats UI elements not found.");
+            return;
+        }
+
+        this.bestSongsListElement.innerHTML = '';
+        this.worstSongsListElement.innerHTML = '';
+        this.overallStatsElement.innerHTML = '';
+
+        if (stats && stats.error) {
+            this.overallStatsElement.innerHTML = `<p style="color: #ffc107;">${stats.error}</p>`;
+            this.bestSongsListElement.innerHTML = '<li>N/A</li>';
+            this.worstSongsListElement.innerHTML = '<li>N/A</li>';
+            this.performanceStatsSection.classList.remove('hidden');
+            return;
+        }
+
+        if (!stats || (stats.bestSongs.length === 0 && stats.worstSongs.length === 0 && stats.totalPlays === 0)) {
+            // Default message if no specific error but no data
+            this.overallStatsElement.innerHTML = '<p>Play some rounds to see your performance stats!</p>';
+            this.bestSongsListElement.innerHTML = '<li>Play more to see your best songs!</li>';
+            this.worstSongsListElement.innerHTML = '<li>No specific songs to practice yet. Keep playing!</li>';
+            this.performanceStatsSection.classList.remove('hidden'); // Still show the section with these messages
+            return;
+        }
+
+        this.performanceStatsSection.classList.remove('hidden');
+
+        // Populate Best Songs
+        if (stats.bestSongs && stats.bestSongs.length > 0) {
+            stats.bestSongs.forEach(song => {
+                const li = document.createElement('li');
+                li.textContent = `${song.title} (Accuracy: ${(song.accuracy * 100).toFixed(0)}%, Plays: ${song.playCount})`;
+                this.bestSongsListElement.appendChild(li);
+            });
+        } else {
+            const li = document.createElement('li');
+            li.textContent = 'Play more to see your best songs!';
+            this.bestSongsListElement.appendChild(li);
+        }
+
+        // Populate Worst Songs (Songs to Practice)
+        if (stats.worstSongs && stats.worstSongs.length > 0) {
+            stats.worstSongs.forEach(song => {
+                const li = document.createElement('li');
+                // For worst songs, show accuracy and perhaps number of incorrect/skipped if relevant
+                li.textContent = `${song.title} (Accuracy: ${(song.accuracy * 100).toFixed(0)}%, Plays: ${song.playCount})`;
+                this.worstSongsListElement.appendChild(li);
+            });
+        } else {
+            const li = document.createElement('li');
+            li.textContent = 'No specific songs to practice yet. Keep playing!';
+            this.worstSongsListElement.appendChild(li);
+        }
+        
+        // Populate Overall Stats
+        if (stats.totalPlays > 0) {
+            const p = document.createElement('p');
+            p.textContent = `Overall Accuracy: ${stats.overallAccuracy}% (Total Plays: ${stats.totalPlays})`;
+            this.overallStatsElement.appendChild(p);
+        } else {
+             const p = document.createElement('p');
+            // This case should be covered by the block above if totalPlays is 0
+            p.textContent = `Play some rounds to see your overall stats.`;
+            this.overallStatsElement.appendChild(p);
+        }
+    }
+
     showError(message) {
         if (this.feedbackMessageElement) {
             this.feedbackMessageElement.textContent = message;
