@@ -1,9 +1,100 @@
+:root {
+    --primary-background-color: #f0f0f0;
+    --secondary-background-color: #fff;
+    --tertiary-background-color: #2a2a2a; /* For dark sections like performance stats */
+    --primary-text-color: #333;
+    --secondary-text-color: #555;
+    --tertiary-text-color: #eee; /* For dark backgrounds */
+    --quaternary-background-color: #333; /* For list items on dark backgrounds */
+    --inverted-text-color: #fff; /* For primary buttons */
+    --accent-color-1: #007bff; /* Primary button, links */
+    --accent-color-1-hover: #0056b3;
+    --accent-color-2: #5cb85c; /* Start game button */
+    --accent-color-2-hover: #4cae4c;
+    --accent-color-3: #ffc107; /* Skip button */
+    --accent-color-3-hover: #e0a800;
+    --accent-color-4: #17a2b8; /* Next song button */
+    --accent-color-4-hover: #138496;
+    --accent-color-5: #28a745; /* Play again button */
+    --accent-color-5-hover: #218838;
+
+    --border-color-light: #ddd;
+    --border-color-medium: #ccc;
+    --border-color-dark: #444;
+    --border-color-darker: #555;
+    --border-color-dashed: #eee;
+
+    --feedback-correct-bg: #d4edda;
+    --feedback-correct-text: #155724;
+    --feedback-correct-border: #c3e6cb;
+
+    --feedback-incorrect-bg: #f8d7da;
+    --feedback-incorrect-text: #721c24;
+    --feedback-incorrect-border: #f5c6cb;
+
+    --feedback-skipped-bg: #fff3cd;
+    --feedback-skipped-text: #856404;
+    --feedback-skipped-border: #ffeeba;
+
+    --feedback-ended-bg: #e2e3e5;
+    --feedback-ended-text: #383d41;
+    --feedback-ended-border: #d6d8db;
+
+    --song-status-correct-color: #4CAF50;
+    --song-status-incorrect-color: #F44336;
+    --song-status-skipped-color: #FFC107;
+    --played-songs-list-item-border-color: #383838;
+
+
+    --shadow-color: rgba(0,0,0,0.1);
+    --disabled-bg-color: #ccc;
+
+    /* Dark theme variables */
+    --dark-primary-background-color: #121212;
+    --dark-secondary-background-color: #1e1e1e;
+    --dark-tertiary-background-color: #282828;
+    --dark-quaternary-background-color: #424242; /* For list items in dark mode */
+    --dark-primary-text-color: #e0e0e0;
+    --dark-secondary-text-color: #b0b0b0;
+    --dark-tertiary-text-color: #f5f5f5;
+    --dark-inverted-text-color: #121212;
+    --dark-border-color-light: #333;
+    --dark-border-color-medium: #444;
+    --dark-border-color-dark: #666;
+    --dark-border-color-darker: #777;
+    --dark-border-color-dashed: #333;
+    --dark-shadow-color: rgba(255,255,255,0.05);
+    --dark-disabled-bg-color: #555;
+
+    --dark-feedback-correct-bg: #2a4b37;
+    --dark-feedback-correct-text: #a6d7b5;
+    --dark-feedback-correct-border: #345f41;
+
+    --dark-feedback-incorrect-bg: #5c2a2f;
+    --dark-feedback-incorrect-text: #f1b8bc;
+    --dark-feedback-incorrect-border: #70383d;
+
+    --dark-feedback-skipped-bg: #5e502c;
+    --dark-feedback-skipped-text: #f9e1a0;
+    --dark-feedback-skipped-border: #746036;
+
+    --dark-feedback-ended-bg: #3e4144;
+    --dark-feedback-ended-text: #c1c7cd;
+    --dark-feedback-ended-border: #4f5357;
+
+    --dark-song-status-correct-color: #81C784; /* Lighter green for dark mode */
+    --dark-song-status-incorrect-color: #E57373; /* Lighter red for dark mode */
+    --dark-song-status-skipped-color: #FFD54F; /* Lighter amber for dark mode */
+    --dark-played-songs-list-item-border-color: #4F4F4F; /* Lighter border for dark mode */
+}
+
 body {
     font-family: sans-serif;
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: #f0f0f0;
+    background-color: var(--primary-background-color);
+    color: var(--primary-text-color);
     margin: 0;
     padding: 20px;
     min-height: 100vh;
@@ -15,30 +106,30 @@ header {
 }
 
 header h1 {
-    color: #333;
+    color: var(--primary-text-color);
 }
 
 #loading-indicator {
     font-size: 1.2em;
     padding: 20px;
-    background-color: #fff;
+    background-color: var(--secondary-background-color);
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px var(--shadow-color);
 }
 
 #start-game-btn {
     font-size: 1.5em;
     padding: 15px 30px;
     cursor: pointer;
-    background-color: #5cb85c;
-    color: white;
+    background-color: var(--accent-color-2);
+    color: var(--inverted-text-color);
     border: none;
     border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px var(--shadow-color);
 }
 
 #start-game-btn:hover {
-    background-color: #4cae4c;
+    background-color: var(--accent-color-2-hover);
 }
 
 main#game-container {
@@ -46,10 +137,10 @@ main#game-container {
     flex-direction: column;
     align-items: center;
     gap: 20px;
-    background-color: #fff;
+    background-color: var(--secondary-background-color);
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 10px var(--shadow-color);
     width: 100%;
     max-width: 600px;
 }
@@ -57,7 +148,7 @@ main#game-container {
 #album-art-section img#album-cover {
     max-width: 300px;
     max-height: 300px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border-color-light);
     border-radius: 4px;
 }
 
@@ -74,47 +165,50 @@ main#game-container {
 #guessing-area input[type="text"] {
     padding: 10px;
     font-size: 1em;
-    border: 1px solid #ccc;
+    border: 1px solid var(--border-color-medium);
     border-radius: 4px;
     width: 80%;
     max-width: 300px;
+    background-color: var(--secondary-background-color);
+    color: var(--primary-text-color);
 }
 
 button {
     padding: 10px 15px;
     font-size: 1em;
     cursor: pointer;
-    background-color: #007bff;
-    color: white;
+    background-color: var(--accent-color-1);
+    color: var(--inverted-text-color);
     border: none;
     border-radius: 4px;
     transition: background-color 0.2s ease;
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: var(--accent-color-1-hover);
 }
 
 button:disabled {
-    background-color: #ccc;
+    background-color: var(--disabled-bg-color);
     cursor: not-allowed;
 }
 
 #skip-song-btn {
-    background-color: #ffc107;
-    color: #333;
+    background-color: var(--accent-color-3);
+    color: var(--primary-text-color);
 }
 
 #skip-song-btn:hover {
-    background-color: #e0a800;
+    background-color: var(--accent-color-3-hover);
 }
 
 #next-song-btn {
-    background-color: #17a2b8;
+    background-color: var(--accent-color-4);
+    color: var(--inverted-text-color);
 }
 
 #next-song-btn:hover {
-    background-color: #138496;
+    background-color: var(--accent-color-4-hover);
 }
 
 .feedback {
@@ -128,38 +222,38 @@ button:disabled {
 }
 
 .feedback.correct {
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
+    background-color: var(--feedback-correct-bg);
+    color: var(--feedback-correct-text);
+    border: 1px solid var(--feedback-correct-border);
 }
 
 .feedback.incorrect {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
+    background-color: var(--feedback-incorrect-bg);
+    color: var(--feedback-incorrect-text);
+    border: 1px solid var(--feedback-incorrect-border);
 }
 
 .feedback.skipped {
-    background-color: #fff3cd;
-    color: #856404;
-    border: 1px solid #ffeeba;
+    background-color: var(--feedback-skipped-bg);
+    color: var(--feedback-skipped-text);
+    border: 1px solid var(--feedback-skipped-border);
 }
 
 .feedback.ended {
-    background-color: #e2e3e5;
-    color: #383d41;
-    border: 1px solid #d6d8db;
+    background-color: var(--feedback-ended-bg);
+    color: var(--feedback-ended-text);
+    border: 1px solid var(--feedback-ended-border);
 }
 
-.feedback.error {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
+.feedback.error { /* Assuming error is same as incorrect for now */
+    background-color: var(--feedback-incorrect-bg);
+    color: var(--feedback-incorrect-text);
+    border: 1px solid var(--feedback-incorrect-border);
 }
 
 #current-song-title {
     font-style: italic;
-    color: #555;
+    color: var(--secondary-text-color);
     margin-top: 5px;
 }
 
@@ -170,7 +264,7 @@ button:disabled {
 
 #round-counter {
     font-size: 1em;
-    color: #555;
+    color: var(--secondary-text-color);
 }
 
 .hidden {
@@ -181,52 +275,77 @@ button:disabled {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 15px;
+    gap: 20px; /* Increased gap */
     padding: 30px;
-    background-color: #fff;
+    background-color: var(--secondary-background-color);
     border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 10px var(--shadow-color);
     text-align: center;
+    border: 1px solid var(--border-color-medium); /* Added border */
+    width: 90%; /* Added width */
+    max-width: 700px; /* Added max-width */
 }
 
-#game-over-screen h2 {
-    margin-bottom: 10px;
+#game-over-screen h2 { /* Targets h2#round-over-title */
+    margin-bottom: 20px; /* Increased margin */
+    color: var(--primary-text-color);
+    font-size: 2em; /* Made title larger */
 }
 
-#game-over-screen h3 {
+/* Style for the final score paragraph */
+#game-over-screen p.final-score-text { /* Assuming a class might be added to the score p tag */
+    font-size: 1.5em; /* Increased size */
+    font-weight: bold;
+    margin-bottom: 25px; /* Increased margin */
+    color: var(--primary-text-color);
+}
+/* Fallback if p tag for score does not have a specific class and is the direct child */
+#game-over-screen > p {
+    font-size: 1.4em;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: var(--primary-text-color);
+}
+
+
+#game-over-screen h3 { /* General h3 within game-over, if any outside container */
     margin-top: 15px;
     margin-bottom: 5px;
-    color: #eee;
+    color: var(--primary-text-color);
 }
 
 #played-songs-container {
     width: 100%;
     max-width: 500px;
-    margin-top: 20px;
+    margin-top: 0; /* Adjusted margin */
+    margin-bottom: 25px; /* Added margin */
 }
 
 #played-songs-container h3 {
-    margin-bottom: 10px;
-    color: #333;
+    margin-bottom: 15px; /* Increased margin */
+    color: var(--primary-text-color);
+    font-size: 1.3em; /* Made subtitle larger */
+    text-align: left; /* Aligned left */
 }
 
 #played-songs-list {
     list-style-type: none;
-    padding: 0;
-    max-height: 150px; /* Adjust as needed */
+    padding: 10px; /* Added padding */
+    max-height: 180px; /* Increased max-height slightly */
     overflow-y: auto;
-    border: 1px solid #444;
+    border: 1px solid var(--border-color-medium); /* Light mode border */
     border-radius: 4px;
-    background-color: #282828;
+    background-color: var(--primary-background-color); /* Light mode background */
 }
 
 #played-songs-list li {
-    padding: 8px 10px;
-    border-bottom: 1px solid #383838;
-    font-size: 0.9em;
+    padding: 12px 10px; /* Adjusted padding */
+    border-bottom: 1px solid var(--border-color-light); /* Light mode border */
+    font-size: 1em; /* Increased font size */
     display: flex;
     justify-content: space-between;
     align-items: center;
+    color: var(--primary-text-color); /* Light mode text color */
 }
 
 #played-songs-list li:last-child {
@@ -239,43 +358,61 @@ button:disabled {
 }
 
 #played-songs-list .song-status-correct {
-    color: #4CAF50; /* Green */
+    color: var(--song-status-correct-color);
 }
 #played-songs-list .song-status-incorrect {
-    color: #F44336; /* Red */
+    color: var(--song-status-incorrect-color);
 }
 #played-songs-list .song-status-skipped,
-#played-songs-list .song-status-ended {
-    color: #FFC107; /* Amber */
+#played-songs-list .song-status-ended { /* Grouping skipped and ended as they use the same color */
+    color: var(--song-status-skipped-color);
 }
 
-#play-again-btn {
-    background-color: #28a745;
+#play-again-btn { /* Renamed to match convention, was play-again-btn */
+    background-color: var(--accent-color-5);
     font-size: 1.2em;
     padding: 12px 25px;
+    margin-top: 10px; /* Added margin */
+    max-width: 220px; /* Constrained width */
+    width: 100%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 #play-again-btn:hover {
-    background-color: #218838;
+    background-color: var(--accent-color-5-hover);
 }
 
 /* Added styles for game setup and adaptive training options */
 #game-setup-options {
     margin-bottom: 20px;
     padding: 15px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--border-color-medium);
     border-radius: 8px;
+    background-color: var(--secondary-background-color); /* Added for consistency */
+}
+
+/* Styling for the main menu button on game over screen */
+#game-over-screen #main-menu-btn {
+    margin-top: 10px;
+    max-width: 220px;
+    width: 100%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 #game-setup-options h2 {
     margin-top: 0;
+    color: var(--primary-text-color);
 }
 
 #album-selection-container,
 #adaptive-options-container {
     margin-top: 10px;
     padding: 10px;
-    border: 1px dashed #eee;
+    border: 1px dashed var(--border-color-dashed);
     border-radius: 4px;
 }
 
@@ -286,6 +423,7 @@ button:disabled {
 
 #album-checkboxes label {
     margin-left: 5px;
+    color: var(--primary-text-color);
 }
 
 .hidden {
@@ -298,12 +436,13 @@ button:disabled {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: var(--surface-2);
-    color: var(--text);
-    padding: var(--spacing-sm) var(--spacing-md);
-    border-radius: var(--radius-sm);
+    background-color: var(--secondary-background-color); /* Was var(--surface-2) - assuming secondary */
+    color: var(--primary-text-color); /* Was var(--text) - assuming primary */
+    padding: 10px 15px; /* Was var(--spacing-sm) var(--spacing-md) - providing concrete values */
+    border-radius: 4px; /* Was var(--radius-sm) - providing concrete value */
     font-size: 0.9em;
     animation: fadeInOut 1.5s ease-in-out infinite;
+    box-shadow: 0 2px 4px var(--shadow-color); /* Added shadow for consistency */
 }
 
 @keyframes fadeInOut {
@@ -313,15 +452,15 @@ button:disabled {
 
 /* Performance Stats Section */
 #performance-stats {
-    background-color: #2a2a2a;
+    background-color: var(--tertiary-background-color); /* was #2a2a2a */
     padding: 20px;
     border-radius: 8px;
     margin-top: 20px;
-    border: 1px solid #444;
+    border: 1px solid var(--border-color-dark); /* was #444 */
 }
 
 #performance-stats h2 {
-    color: #eee;
+    color: var(--tertiary-text-color); /* was #eee */
     text-align: center;
     margin-bottom: 15px;
 }
@@ -338,8 +477,8 @@ button:disabled {
 }
 
 #performance-stats h3 {
-    color: #ccc;
-    border-bottom: 1px solid #555;
+    color: var(--secondary-text-color); /* was #ccc, adjusted for dark bg */
+    border-bottom: 1px solid var(--border-color-darker); /* was #555 */
     padding-bottom: 5px;
     margin-bottom: 10px;
 }
@@ -350,12 +489,12 @@ button:disabled {
 }
 
 #performance-stats ul li {
-    background-color: #333;
+    background-color: var(--quaternary-background-color); /* Was #333 */
     padding: 8px;
     margin-bottom: 5px;
     border-radius: 4px;
     font-size: 0.9em;
-    color: #ddd;
+    color: var(--tertiary-text-color); /* was #ddd */
 }
 #performance-stats ul li:empty {
     display: none;
@@ -365,7 +504,7 @@ button:disabled {
     clear: both;
     padding-top: 15px;
     text-align: center;
-    color: #bbb;
+    color: var(--secondary-text-color); /* was #bbb, adjusted for dark bg */
     font-size: 1.1em;
 }
 
@@ -385,4 +524,212 @@ button:disabled {
     #skip-song-btn {
         margin-left: 0;
     }
+}
+
+/* Dark Mode Styles */
+body.dark-mode {
+    background-color: var(--dark-primary-background-color);
+    color: var(--dark-primary-text-color);
+}
+
+body.dark-mode header h1 {
+    color: var(--dark-primary-text-color);
+}
+
+body.dark-mode #loading-indicator {
+    background-color: var(--dark-secondary-background-color);
+    color: var(--dark-primary-text-color);
+    box-shadow: 0 2px 4px var(--dark-shadow-color);
+}
+
+body.dark-mode #start-game-btn {
+    background-color: var(--accent-color-2); /* Retain accent background */
+    color: var(--dark-tertiary-text-color); /* Ensure light text */
+}
+
+body.dark-mode #start-game-btn:hover {
+    background-color: var(--accent-color-2-hover);
+    color: var(--dark-tertiary-text-color); /* Ensure light text on hover */
+}
+
+body.dark-mode main#game-container {
+    background-color: var(--dark-secondary-background-color);
+    box-shadow: 0 2px 10px var(--dark-shadow-color);
+}
+
+body.dark-mode #album-art-section img#album-cover {
+    border: 1px solid var(--dark-border-color-light);
+}
+
+body.dark-mode #guessing-area input[type="text"] {
+    border: 1px solid var(--dark-border-color-medium);
+    background-color: var(--dark-secondary-background-color); /* Or a specific input bg for dark mode */
+    color: var(--dark-primary-text-color);
+}
+
+body.dark-mode button {
+    background-color: var(--accent-color-1); /* Retain accent background */
+    color: var(--dark-tertiary-text-color); /* Ensure light text */
+}
+
+body.dark-mode button:hover {
+    background-color: var(--accent-color-1-hover);
+    color: var(--dark-tertiary-text-color); /* Ensure light text on hover */
+}
+
+body.dark-mode button:disabled {
+    background-color: var(--dark-disabled-bg-color);
+}
+
+body.dark-mode #skip-song-btn {
+    background-color: var(--accent-color-3); /* Retain accent background (yellow) */
+    color: var(--dark-inverted-text-color); /* Dark text is fine on yellow */
+}
+
+body.dark-mode #skip-song-btn:hover {
+    background-color: var(--accent-color-3-hover);
+    color: var(--dark-inverted-text-color); /* Dark text is fine on yellow */
+}
+
+body.dark-mode #next-song-btn {
+    background-color: var(--accent-color-4); /* Retain accent background */
+    color: var(--dark-tertiary-text-color); /* Ensure light text */
+}
+
+body.dark-mode #next-song-btn:hover {
+    background-color: var(--accent-color-4-hover);
+    color: var(--dark-tertiary-text-color); /* Ensure light text on hover */
+}
+
+body.dark-mode .feedback.correct {
+    background-color: var(--dark-feedback-correct-bg);
+    color: var(--dark-feedback-correct-text);
+    border: 1px solid var(--dark-feedback-correct-border);
+}
+
+body.dark-mode .feedback.incorrect {
+    background-color: var(--dark-feedback-incorrect-bg);
+    color: var(--dark-feedback-incorrect-text);
+    border: 1px solid var(--dark-feedback-incorrect-border);
+}
+
+body.dark-mode .feedback.skipped {
+    background-color: var(--dark-feedback-skipped-bg);
+    color: var(--dark-feedback-skipped-text);
+    border: 1px solid var(--dark-feedback-skipped-border);
+}
+
+body.dark-mode .feedback.ended {
+    background-color: var(--dark-feedback-ended-bg);
+    color: var(--dark-feedback-ended-text);
+    border: 1px solid var(--dark-feedback-ended-border);
+}
+
+body.dark-mode .feedback.error {
+    background-color: var(--dark-feedback-incorrect-bg); /* Assuming same as incorrect */
+    color: var(--dark-feedback-incorrect-text);
+    border: 1px solid var(--dark-feedback-incorrect-border);
+}
+
+body.dark-mode #current-song-title {
+    color: var(--dark-secondary-text-color);
+}
+
+body.dark-mode #round-counter {
+    color: var(--dark-secondary-text-color);
+}
+
+body.dark-mode #game-over-screen {
+    background-color: var(--dark-secondary-background-color);
+    box-shadow: 0 2px 10px var(--dark-shadow-color);
+}
+
+body.dark-mode #game-over-screen h2 {
+    color: var(--dark-primary-text-color);
+}
+
+body.dark-mode #game-over-screen h3 {
+    color: var(--dark-tertiary-text-color); 
+}
+
+body.dark-mode #played-songs-container h3 {
+    color: var(--dark-primary-text-color);
+}
+
+body.dark-mode #played-songs-list {
+    border: 1px solid var(--dark-border-color-dark);
+    background-color: var(--dark-tertiary-background-color); /* Was #282828 */
+}
+
+body.dark-mode #played-songs-list li {
+    border-bottom: 1px solid var(--dark-played-songs-list-item-border-color);
+    color: var(--dark-tertiary-text-color);
+}
+
+body.dark-mode #played-songs-list .song-status-correct {
+    color: var(--dark-song-status-correct-color);
+}
+body.dark-mode #played-songs-list .song-status-incorrect {
+    color: var(--dark-song-status-incorrect-color);
+}
+body.dark-mode #played-songs-list .song-status-skipped,
+body.dark-mode #played-songs-list .song-status-ended {
+    color: var(--dark-song-status-skipped-color);
+}
+
+body.dark-mode #play-again-btn { /* Play Again button on Game Over screen */
+    background-color: var(--accent-color-5); /* Retain accent background */
+    color: var(--dark-tertiary-text-color);   /* Ensure light text */
+}
+
+body.dark-mode #play-again-btn:hover {
+    background-color: var(--accent-color-5-hover);
+    color: var(--dark-tertiary-text-color);   /* Ensure light text on hover */
+}
+
+body.dark-mode #game-setup-options {
+    border: 1px solid var(--dark-border-color-medium);
+    background-color: var(--dark-secondary-background-color);
+}
+
+body.dark-mode #game-setup-options h2 {
+    color: var(--dark-primary-text-color);
+}
+
+body.dark-mode #album-selection-container,
+body.dark-mode #adaptive-options-container {
+    border: 1px dashed var(--dark-border-color-dashed);
+}
+
+body.dark-mode #album-checkboxes label {
+    color: var(--dark-primary-text-color);
+}
+
+body.dark-mode .audio-loading {
+    background-color: var(--dark-secondary-background-color);
+    color: var(--dark-primary-text-color);
+    box-shadow: 0 2px 4px var(--dark-shadow-color);
+}
+
+body.dark-mode #performance-stats {
+    background-color: var(--dark-tertiary-background-color); /* was #2a2a2a */
+    border: 1px solid var(--dark-border-color-dark); /* was #444 */
+}
+
+body.dark-mode #performance-stats h2 {
+    color: var(--dark-tertiary-text-color); /* was #eee */
+}
+
+body.dark-mode #performance-stats h3 {
+    color: var(--dark-secondary-text-color); /* was #ccc */
+    border-bottom: 1px solid var(--dark-border-color-darker); /* was #555 */
+}
+
+body.dark-mode #performance-stats ul li {
+    background-color: var(--dark-quaternary-background-color); /* Was #333 */
+    color: var(--dark-tertiary-text-color); 
+}
+
+body.dark-mode #overall-stats {
+    color: var(--dark-secondary-text-color); /* was #bbb */
 }
